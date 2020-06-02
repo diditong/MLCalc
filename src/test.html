@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+
+<body>
+    <svg id='coordsys'>
+        <g id='b' style='width:100%'>
+        </g>
+    </svg>
+    <form action='#'>
+        <label for='myfile'>Import Data</label>
+        <input type='file' id='myfile' name='myfile' onchange='readFile(this)' style='display: none'></input>
+    </form>
+    <button onclick='addPoint()'>Add point</button>
+    <button onclick='deletePoint()'>Delete point</button>
+    <button onclick='addCenter()'>Add center</button>
+</body>
+
+<script>
+    var coordsys = document.getElementById('coordsys');
+    var grids = document.getElementById('b');
+    window.onload = function(){
+        W = 750, svgWidth = 750;
+        H = 400, svgHeight = 400;
+        cX = 375, centerX = 375;
+        cY = 200, centerY = 200;
+        gS = 18, gridSize = 18;
+        nS = 4, numSubgrids = 4;
+        co = 2; coefficient = 2;
+        exp = 0; exponential = 0;
+        zoom = 0;
+        redraw();
+    }
+
+    function redraw() {
+        coordsys.setAttribute('width', W);
+        coordsys.setAttribute('height', H);
+        var xu = -Math.floor(cY/gS);
+        var xd = Math.floor((H-cY)/gS);
+        var yl = -Math.floor(cX/gS);
+        var yr = Math.floor((W-cX)/gS);
+        
+        var lines = '';
+        var ticks = '';
+        
+        function representTick () {
+            return;
+        }
+
+
+        for (i=xu; i<=xd; i++) {
+            var y = cY + i*gS;
+            if (i % nS == 0){
+                var line = `<line class='x-grids' x1='0' y1=${y} x2=${W} y2=${y} stroke-width='0.5' stroke='#666666'/>`;
+                if (i != 0) {
+                    var yval = co*Math.pow(10,exp)*(-i/nS);
+                    var ytick = `<text x=${cX-3} y=${y+3} fill='black' font-size='6pt' text-anchor='end' font-family="math">${yval}</text>`
+                }
+            }
+            else {
+                var line = `<line class='x-grids' x1='0' y1=${y} x2=${W} y2=${y} stroke-width='0.5' stroke='#CCCCCC'/>`;
+            }
+            lines += line;
+            ticks += ytick;
+        }
+
+        for (i=yl; i<=yr; i++) {
+            var x = cX + i*gS;
+            if (i % nS == 0){
+                var line = `<line class='x-grids' x1=${x} y1=0 x2=${x} y2=${H} stroke-width='0.5' stroke='#666666'/>`;
+                if (i != 0) {
+                    var xval = co*Math.pow(10,exp)*(i/nS);
+                    var xtick = `<text x=${x} y=${cY+8} fill='black' font-size='6pt' text-anchor='middle' font-family="math">${xval}</text>`
+                }
+            }
+            else {
+                var line = `<line class='x-grids' x1=${x} y1=0 x2=${x} y2=${H} stroke-width='0.5' stroke='#CCCCCC'/>`;
+            }
+            lines += line;
+            ticks += xtick;
+        }
+
+        var xaxis = `<line id='x-axis' x1='0' y1=${cY} x2=${W} y2=${cY} stroke-width='1' stroke='black'/>`;
+        var yaxis = `<line id='y-axis' x1=${cX} y1=0 x2=${cX} y2=${H} stroke-width='1' stroke='black'/>`;
+        var otick = `<text x=${cX-3} y=${cY+8} fill='black' font-size='6pt' text-anchor='end' font-family="math">${0}</text>`
+        
+        lines += xaxis+yaxis;
+        ticks += otick;
+        grids.innerHTML = lines+ticks;
+    }
+
+    coordsys.addEventListener('mousedown',function(evt){
+        dragStartX = evt.offsetX;
+        dragStartY = evt.offsetY;
+        dragging = true;
+        //console.log(lastX, lastY);
+      },false);
+
+    coordsys.addEventListener('mousemove',function(evt){
+        var lastX = evt.offsetX;
+        var lastY = evt.offsetY;
+        if (dragging) {
+            cX = centerX+lastX-dragStartX;
+            cY = centerY+lastY-dragStartY;
+            redraw();
+        }
+    },false);
+
+    coordsys.addEventListener('mouseup',function(evt){
+        dragging = false;
+        centerX = cX;
+        centerY = cY;
+    },false);
+
+    var updateUnitLength = function(zoom){
+        if (zoom == 1) {
+            if (co == 1) {
+                co = 5;
+                exp -= 1;
+            } else if (co == 2) {
+                co = 1;
+            } else if (co == 5) {
+                co = 2;
+            }
+        }
+        else if (zoom == -1) {
+            if (co == 5) {
+                co = 1;
+                exp += 1;
+            } else if (co == 1) {
+                co = 2;
+            } else if (co == 2) {
+                co = 5;
+            }
+        }
+    }
+
+    var updateGridSize = function(gridSize, z, coeff) {
+        if (zoom == 1) { //zoom in
+            if ((gridSize > 22) && (coeff == 5)) { //coefficient is 5
+                gS = 12;
+                nS = 4;
+                updateUnitLength(zoom);
+            } else if ((gridSize > 22) && ((coeff == 1) | (coeff == 2))) { //coefficient is 2 or 1
+                gS = 12;
+                nS = 5;
+                updateUnitLength(zoom);
+            }
+        } else if (zoom == -1) { //zoom out
+            if ((gridSize < 12) && ((coeff == 2) | (coeff == 5))) { //coefficient is 5
+                gS = 22;
+                nS = 5;
+                updateUnitLength(zoom);
+            } else if ((gridSize < 12) && ((coeff == 1))) { //coefficient is 2 or 1
+                gS = 22;
+                nS = 4;
+                updateUnitLength(zoom);
+            }
+        }
+    }
+
+    var scrollZoom = function(evt){
+        var delta = evt.wheelDelta ? evt.wheelDelta/180 : evt.detail ? -evt.detail : 0;
+        gS = gS+delta;
+        zoom = Math.sign(delta);
+        updateGridSize(gS, zoom, co);
+        console.log(co*Math.pow(10, exp));
+        redraw();
+    }
+
+    var clickZoom = function(evt){
+        gS = 1.5*gS;
+        redraw();
+    }
+
+    coordsys.addEventListener('DOMMouseScroll',scrollZoom,false);
+    coordsys.addEventListener('mousewheel',scrollZoom,false);
+
+    coordsys.addEventListener('dblclick',clickZoom,false);
+
+    </script>
+</html>
