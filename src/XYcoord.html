@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html>
-
+<style>
+    svg text{
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    }
+</style>
 
 <body>
     <svg id='coordsys'>
@@ -42,11 +49,6 @@
         
         var lines = '';
         var ticks = '';
-        
-        function representTick () {
-            return;
-        }
-
 
         for (i=xu; i<=xd; i++) {
             var y = cY + i*gS;
@@ -54,6 +56,9 @@
                 var line = `<line class='x-grids' x1='0' y1=${y} x2=${W} y2=${y} stroke-width='0.5' stroke='#666666'/>`;
                 if (i != 0) {
                     var yval = co*Math.pow(10,exp)*(-i/nS);
+                    if (Math.abs(exp) >= 6){
+                        yval = yval.toExponential();
+                    }
                     var ytick = `<text x=${cX-3} y=${y+3} fill='black' font-size='6pt' text-anchor='end' font-family="math">${yval}</text>`
                 }
             }
@@ -70,6 +75,9 @@
                 var line = `<line class='x-grids' x1=${x} y1=0 x2=${x} y2=${H} stroke-width='0.5' stroke='#666666'/>`;
                 if (i != 0) {
                     var xval = co*Math.pow(10,exp)*(i/nS);
+                    if (Math.abs(exp) >= 6){
+                        xval = xval.toExponential();
+                    }
                     var xtick = `<text x=${x} y=${cY+8} fill='black' font-size='6pt' text-anchor='middle' font-family="math">${xval}</text>`
                 }
             }
@@ -93,15 +101,19 @@
         dragStartX = evt.offsetX;
         dragStartY = evt.offsetY;
         dragging = true;
-        //console.log(lastX, lastY);
+        //console.log(cursorX, cursorY);
       },false);
 
     coordsys.addEventListener('mousemove',function(evt){
-        var lastX = evt.offsetX;
-        var lastY = evt.offsetY;
+        var cursorX = evt.offsetX;
+        var cursorY = evt.offsetY;
+
+        X = (cursorX-cX)/(gS*nS)*(co*Math.pow(10,exp));
+        Y = (cY-cursorY)/(gS*nS)*(co*Math.pow(10,exp));
+
         if (dragging) {
-            cX = centerX+lastX-dragStartX;
-            cY = centerY+lastY-dragStartY;
+            cX = centerX+cursorX-dragStartX;
+            cY = centerY+cursorY-dragStartY;
             redraw();
         }
     },false);
@@ -135,41 +147,61 @@
         }
     }
 
-    var updateGridSize = function(gridSize, z, coeff) {
+    var updateGridSize = function(gridSize, zoom, coeff) {
         if (zoom == 1) { //zoom in
-            if ((gridSize > 22) && (coeff == 5)) { //coefficient is 5
-                gS = 12;
+            if ((gridSize > 20) && (coeff == 5)) { //coefficient is 5
+                gS = 10;
                 nS = 4;
                 updateUnitLength(zoom);
-            } else if ((gridSize > 22) && ((coeff == 1) | (coeff == 2))) { //coefficient is 2 or 1
-                gS = 12;
+            } else if ((gridSize > 25) && (coeff == 2)) { //coefficient is 2
+                gS = 10;
+                nS = 5;
+                updateUnitLength(zoom);
+            } else if ((gridSize > 20) && (coeff == 1)) { //coefficient is 1
+                gS = 10;
                 nS = 5;
                 updateUnitLength(zoom);
             }
         } else if (zoom == -1) { //zoom out
-            if ((gridSize < 12) && ((coeff == 2) | (coeff == 5))) { //coefficient is 5
-                gS = 22;
+            if ((gridSize < 10) && (coeff == 5)) { //coefficient is 5
+                gS = 20;
                 nS = 5;
                 updateUnitLength(zoom);
-            } else if ((gridSize < 12) && ((coeff == 1))) { //coefficient is 2 or 1
-                gS = 22;
+            } else if ((gridSize < 10) && (coeff == 2)) { //coefficient is 2
+                gS = 20;
+                nS = 5;
+                updateUnitLength(zoom);
+            } else if ((gridSize < 10) && (coeff == 1)) { //coefficient is 1
+                gS = 25;
                 nS = 4;
                 updateUnitLength(zoom);
             }
         }
     }
 
+    var updateCenter = function(Xc, Yc) {
+        cX = Xc-X*(gS*nS)/(co*Math.pow(10,exp));
+        cY = Yc+Y*(gS*nS)/(co*Math.pow(10,exp));
+        centerX = cX;
+        centerY = cY;
+    }
+
     var scrollZoom = function(evt){
-        var delta = evt.wheelDelta ? evt.wheelDelta/180 : evt.detail ? -evt.detail : 0;
+        var cursorX = evt.offsetX;
+        var cursorY = evt.offsetY;
+        var delta = evt.wheelDelta ? evt.wheelDelta/720 : evt.detail ? -evt.detail : 0;
         gS = gS+delta;
         zoom = Math.sign(delta);
         updateGridSize(gS, zoom, co);
-        console.log(co*Math.pow(10, exp));
+        updateCenter(cursorX, cursorY);
         redraw();
     }
 
     var clickZoom = function(evt){
-        gS = 1.5*gS;
+        var cursorX = evt.offsetX;
+        var cursorY = evt.offsetY;
+        updateUnitLength(1);
+        updateCenter(cursorX, cursorY);
         redraw();
     }
 
