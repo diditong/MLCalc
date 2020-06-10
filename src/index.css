@@ -1,3 +1,7 @@
+html, body, #calc, .Template, .CardBody, .Context.Provider, .Card, .Calc, .App, #root, #wrap  {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,3 +15,54 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.tick {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+}
+
+
+/* For Toolbar and XYcoord Layout*/
+.column {
+  float: left;
+  padding: 0px;
+  height: 100%;
+}
+
+.left {
+  width: 25%;
+  height: 100%;
+}
+
+.right {
+  width: 75%;
+  height: 100%;
+}
+
+
+/* For Table Layout */
+.remove {
+  background: #f1f1f1;
+}
+.remove td {
+  font-style: italic;
+}
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+.input-group {
+  width: 100%;
+}
+.editable {
+  border: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+.addBtn {
+  cursor: pointer;
+}
+

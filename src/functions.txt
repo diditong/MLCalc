@@ -1,0 +1,8 @@
+1. add point
+2. import points 
+3. add center
+
+4. last step
+5. next step
+6. final result
+

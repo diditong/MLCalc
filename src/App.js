@@ -1,15 +1,16 @@
 import React from 'react';
 import './App.css';
-import './tick.css'
 import ReactDOM from 'react-dom';
 
 import { Nav, Navbar, NavDropdown, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 
 class Navi extends React.Component {
   render () {
     return (
-      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+      <Navbar style={{height:'5%'}} collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Navbar.Brand href="#home">MLCalc - machine learning calculator 0.1.1</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
@@ -30,12 +31,12 @@ class Navi extends React.Component {
   }
 }
 
-function Template (props) {
+function Switch (props) {
   const selected = props.selected;
   if (selected === "KM") {
-    return <h1> I'm KM </h1>;
+    return (<Table />)
   } else if (selected === "GM") {
-    return <XYcoord />;
+    return <h1> I'm GM </h1>;
   } else if (selected === "LR") {
     return <h1> I'm LR </h1>;
   } else if (selected === "LogR") {
@@ -50,16 +51,66 @@ function Template (props) {
   return <h1> I'm Nothing </h1>;
 }
 
-class Calc extends React.Component {
+const styles = {
+  cardStyle: {
+      height: "95%"
+  }
+}
+
+class Table extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = {type: "point", number: 0};
+    this.addRow = this.addRow.bind(this);
+  }
+
+  addRow () {
+    
+  }
+
+  render () {
+
+    return (
+      <table className="table">
+        <thead>
+          <tr>
+            <th>X</th>
+            <th>Y</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="addRow">
+            <td className="col-xs-3">
+              <input className="form-control addX" type="text" placeholder="Enter X" />
+            </td>
+            <td className="col-xs-3">
+              <input className="form-control addY" type="text" placeholder="Enter Y" />
+            </td>
+            <td className="col-xs-1 text-center">
+              <span className="addBtn">
+                <FontAwesomeIcon icon={faPlus} onClick={this.addRow}/>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  }
+}
+
+
+class Toolbar extends React.Component {
 
   constructor (props) {
     super(props);
     this.state = {selected: "KM"};
   }
+
   render () {
     const selected = this.state.selected;
     return (
-      <Card>
+      <Card style={styles.cardStyle} className="rounded-0">
         <Card.Header>
           <Nav variant="tabs">
             <NavDropdown title="Clustering" id="nav-dropdown">
@@ -78,7 +129,7 @@ class Calc extends React.Component {
           </Nav>
         </Card.Header>
         <Card.Body>
-          <Template selected={selected} />
+          <Switch selected={selected}/>
         </Card.Body>
       </Card>
     );
@@ -93,9 +144,9 @@ class XYcoord extends React.Component {
     this.state = {
       W: window.innerWidth,
       H: window.innerHeight,
-      cX: 500,
+      cX: window.innerWidth/2,
       centerX: 500,
-      cY: 300,
+      cY: window.innerHeight/2,
       centerY: 300,
       gS: 18,
       gridSize: 18,
@@ -258,7 +309,7 @@ class XYcoord extends React.Component {
           if (Math.abs(this.state.exp) >= 6) {
               yval = yval.toExponential();
           }
-          grids.push(<text className="tick" x={this.state.cX-3} y={y+5} fill='black' fontSize='10pt' textAnchor='end' fontFamily="math">{yval}</text>);
+          grids.push(<text className='tick' x={this.state.cX-3} y={y+5} fill='black' fontSize='10pt' textAnchor='end' fontFamily="math">{yval}</text>);
         }
       }
       else {
@@ -284,7 +335,7 @@ class XYcoord extends React.Component {
       }
     }
 
-    var coordsys = <svg width='100%' height='100' className='coordsys' onWheel={this.scrollZoom} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseDown={this.mouseDown}>
+    var coordsys = <svg width='100%' height='100%' left='50%' className='coordsys' onWheel={this.scrollZoom} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseDown={this.mouseDown}>
                     <g id='b' width='100%' height='100%'>
                       {grids}
                     </g>
@@ -296,12 +347,24 @@ class XYcoord extends React.Component {
   }
 }
 
+function Calc () {
+  return (
+    <div id='calc'>
+      <div className='column left'>
+        <Toolbar />
+      </div>
+      <div className='column right'> 
+        <XYcoord />
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
-    <div>
+    <div id='wrap'>
       <Navi />
       <Calc />
-      <XYcoord />
     </div>
   );
 }

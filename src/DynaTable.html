@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html style="width:100%;height:100%;">
+<style>
+    .remove {
+    background: #f1f1f1;
+    td {
+        font-style: italic;
+    }
+    }
+
+    .table>tbody>tr>td {
+    vertical-align: middle;
+    }
+    .input-group {
+    width: 100%;
+    }
+
+    .editable {
+    border: none;
+    padding: 0;
+    margin: 0;
+    text-shadow: none;
+    box-shadow: none;
+    }
+    .addBtn {
+    cursor: pointer;
+    }
+</style>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+</head>
+
+<body>
+    <div class="col-md-12">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Formal Suffix</th>
+              <th>Postal Service Preferred</th>
+              <th>Common Alternatives</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="addRow">
+              <td class="col-xs-3">
+                <input class="form-control addMain" type="text" placeholder="Enter title" />
+              </td>
+              
+              <td class="col-xs-3">
+                <input class="form-control addPrefer" type="text" placeholder="Enter title" />
+              </td>
+              <td class="col-xs-5">
+                <input class="form-control addCommon" type="text" placeholder="Enter title" />
+              </td>
+              <td class="col-xs-1 text-center">
+                <span class="addBtn">
+                    <i class="fa fa-plus"></i>
+                  </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-xs-3"><input type="text" value="Alley" class="form-control editable" />  </td>
+              
+              <td class="col-xs-3"><input type="text" value="Aly" class="form-control editable" />  </td>
+              <td class="col-xs-5"><input type="text" value="Allee, AL, Ally" class="form-control editable" />  </td>
+              <td class="col-xs-1 text-center"><a href="#" onClick="deleteRow(this)"><i class="fa fa-trash-o" aria-hidden="true"></a></td>
+            </tr>
+            <tr>
+              <td class="col-xs-3"><input type="text" value="Avenue" class="form-control editable" />  </td>
+              
+              <td class="col-xs-3"><input type="text" value="Ave" class="form-control editable" />  </td>
+              <td class="col-xs-5"><input type="text" value="Av, Aven, Ally" class="form-control editable" />  </td>
+              <td class="col-xs-1 text-center"><a href="#" onClick="deleteRow(this)"><i class="fa fa-trash-o" aria-hidden="true"></a></td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+</body>
+
+<script>
+    function formatRows(main, prefer, common) {
+        return '<tr><td class="col-xs-3"><input type="text" value="' +main+ '" class="form-control editable" /></td>' +
+                '<td class="col-xs-3"><input type="text" value="' +prefer+ '" class="form-control editable" /></td>' +
+                '<td class="col-xs-3"><input type="text" value="' +common+ '" class="form-control editable" /></td>' +
+                '<td class="col-xs-1 text-center"><a href="#" onClick="deleteRow(this)">' +
+                '<i class="fa fa-trash-o" aria-hidden="true"></a></td></tr>';
+    };
+
+    function deleteRow(trash) {
+        $(trash).closest('tr').remove();
+    };
+
+    function addRow() {
+        var main = $('.addMain').val();
+        var preferred = $('.addPrefer').val();
+        var common = $('.addCommon').val();
+        $(formatRows(main,preferred,common)).insertAfter('#addRow');
+        $(input).val('');  
+        }
+
+        $('.addBtn').click(function()  {
+        addRow();
+    });
+</script>
+</html>
