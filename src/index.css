@@ -2,6 +2,11 @@ html, body, #calc, .Card, .Calc, .App, #root, #wrap  {
   height: 100%;
 }
 
+#wrap {
+  display: flex;
+  flex-direction: column;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -25,33 +30,37 @@ code {
   user-select: none;
 }
 
-
 /* For Toolbar and XYcoord Layout*/
 .column {
   float: left;
   padding: 0px;
   height: 100%;
+  flex: 1;
 }
-
 .left {
   width: 25%;
   height: 100%;
+  overflow: auto;
 }
-
 .right {
   width: 75%;
-  height: 100%;
 }
-
 .coordsys {
   width: 100%;
-  height: 95%;
+  height: 100%;
 }
-
-.sidebar {
-  height: 95%;
+.Sidebar {
+  height: 100%;
+  overflow: auto;
 }
-
+.KMTools {
+  height: 100%;
+  overflow: auto;
+}
+.Table {
+  height: 100%;
+  overflow: auto;
+}
 /* For Table Layout */
 .remove {
   background: #f1f1f1;
@@ -59,12 +68,8 @@ code {
 .remove td {
   font-style: italic;
 }
-.table-container {
-  height:50%; 
-  overflow:auto;
-}
-.table > tbody > tr {
-  height: 10px;
+.table-container{
+  overflow: auto;
 }
 .table > tbody > tr > td {
   vertical-align: middle;

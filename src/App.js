@@ -6,24 +6,52 @@ import { Nav, Navbar, NavDropdown, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { findAllByDisplayValue } from '@testing-library/react';
 
-function App() {
-  return (
-    <div id='wrap'>
-      <Navi />
-      <Calc />
-    </div>
-  );
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {selected: "KM"};
+    this.selectModule = this.selectModule.bind(this);
+    
+  }
+
+  selectModule (mod) {
+    this.setState({selected: mod});
+  }
+
+  render () {
+    var selected = this.state.selected;
+    return (
+      <div id='wrap'>
+        <Navi selected={selected} selectModule={this.selectModule}/>
+        <Calc selected={selected}/>
+      </div>
+    );
+  }
 }
 
 class Navi extends React.Component {
   render () {
     return (
-      <Navbar style={{height:'5%'}} collapseOnSelect expand="lg" bg="dark" variant="dark">
+      <Navbar className="navi" collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Navbar.Brand href="#home">MLCalc - machine learning calculator 0.1.1</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
+            <NavDropdown title="Clustering" id="nav-dropdown">
+                <NavDropdown.Item eventKey="c.1" onClick={()=>this.props.selectModule("KM")}>K-Means</NavDropdown.Item>
+                <NavDropdown.Item eventKey="c.2" onClick={()=>this.props.selectModule("GM")}>Gaussian Mixture</NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown title="Regression" id="nav-dropdown">
+                <NavDropdown.Item eventKey="r.1" onClick={()=>this.props.selectModule("LR")}>Linear Regression</NavDropdown.Item>
+                <NavDropdown.Item eventKey="r.2" onClick={()=>this.props.selectModule("LogR")}>Logistic Regression</NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown title="Graph" id="nav-dropdown">
+                <NavDropdown.Item eventKey="g.1" onClick={()=>this.props.selectModule("BN")}>Bayesian Network</NavDropdown.Item>
+                <NavDropdown.Item eventKey="g.2" onClick={()=>this.props.selectModule("HM")}>Hidden Markov</NavDropdown.Item>
+                <NavDropdown.Item eventKey="g.3" onClick={()=>this.props.selectModule("FG")}>Factor Graph</NavDropdown.Item>
+              </NavDropdown>
           </Nav>
           <Nav>
             <NavDropdown title="Language" id="collasible-nav-dropdown">
@@ -43,15 +71,18 @@ class Navi extends React.Component {
 class Calc extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {selected:'KM', data: []};
+    this.state = {data: []};
     this.addPoint = this.addPoint.bind(this);
     this.deletePoint = this.deletePoint.bind(this);
-    this.selectModule = this.selectModule.bind(this);
-
+    this.editPoint = this.editPoint.bind(this);
   }
 
-  selectModule (mod) {
-    this.setState({selected: mod});
+  editPoint (id, val) {
+    var idx = id.slice(0,-1);
+    var coord = id.charAt(id.length-1);
+    var newData = [...this.state.data];
+    newData[idx][coord] = val;
+    this.setState({data: newData});
   }
 
   addPoint (inputX, inputY) {
@@ -70,15 +101,15 @@ class Calc extends React.Component {
   }
 
   render () {
-    var selected = this.state.selected;
+    var selected = this.props.selected;
     var data = this.state.data;
     return (
       <div id='calc'>
         <div className='column left'>
-          <Sidebar selected={selected} data={data} selectModule={this.selectModule} addPoint={this.addPoint} deletePoint={this.deletePoint} />
+          <Sidebar selected={selected} data={data} selectModule={this.selectModule} addPoint={this.addPoint} deletePoint={this.deletePoint} editPoint={this.editPoint}/>
         </div>
         <div className='column right'>
-          <Canvas selected={selected} data={data} />
+          <Canvas selected={selected} data={data}/>
         </div>
       </div>
     );
@@ -96,7 +127,7 @@ class Sidebar extends React.Component {
     const selected = this.props.selected;
     var tools = undefined;
     if (selected === "KM") {
-      tools = <KMTools data={this.props.data} addPoint={this.props.addPoint} deletePoint={this.props.deletePoint}/>;
+      tools = <KMTools data={this.props.data} addPoint={this.props.addPoint} deletePoint={this.props.deletePoint} editPoint={this.props.editPoint}/>;
     } else if (selected === "GM") {
       tools = <h1> I'm GM </h1>;
     } else if (selected === "LR") {
@@ -114,28 +145,7 @@ class Sidebar extends React.Component {
     }
 
     return (
-      <Card className="sidebar rounded-0">
-        <Card.Header>
-          <Nav variant="tabs">
-            <NavDropdown title="Clustering" id="nav-dropdown">
-              <NavDropdown.Item eventKey="c.1" onClick={()=>this.props.selectModule("KM")}>K-Means</NavDropdown.Item>
-              <NavDropdown.Item eventKey="c.2" onClick={()=>this.props.selectModule("GM")}>Gaussian Mixture</NavDropdown.Item>
-            </NavDropdown>
-            <NavDropdown title="Regression" id="nav-dropdown">
-              <NavDropdown.Item eventKey="r.1" onClick={()=>this.props.selectModule("LR")}>Linear Regression</NavDropdown.Item>
-              <NavDropdown.Item eventKey="r.2" onClick={()=>this.props.selectModule("LogR")}>Logistic Regression</NavDropdown.Item>
-            </NavDropdown>
-            <NavDropdown title="Graph" id="nav-dropdown">
-              <NavDropdown.Item eventKey="g.1" onClick={()=>this.props.selectModule("BN")}>Bayesian Network</NavDropdown.Item>
-              <NavDropdown.Item eventKey="g.2" onClick={()=>this.props.selectModule("HM")}>Hidden Markov</NavDropdown.Item>
-              <NavDropdown.Item eventKey="g.3" onClick={()=>this.props.selectModule("FG")}>Factor Graph</NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-        </Card.Header>
-        <Card.Body>
-          {tools}
-        </Card.Body>
-      </Card>
+      tools
     );
   }
 }
@@ -143,7 +153,7 @@ class Sidebar extends React.Component {
 function KMTools(props) {
   return (
     <div id='KMTools'>
-      <Table data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint}/>
+      <Table data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
     </div>
   );
 }
@@ -170,10 +180,10 @@ class Table extends React.Component {
       list.push(
         <tr>
           <td className="col-xs-3">
-            <input className="form-control border-0" type="text" value={this.props.data[i][0]} />
+            <input id={i+"0"} className="form-control border-0" type="text" value={this.props.data[i][0]} onChange={e=>this.props.editPoint(e.target.id, e.target.value)}/>
           </td>
           <td className="col-xs-3">
-            <input className="form-control border-0" type="text" value={this.props.data[i][1]} />
+            <input id={i+"1"} className="form-control border-0" type="text" value={this.props.data[i][1]} onChange={e=>this.props.editPoint(e.target.id, e.target.value)}/>
           </td>
           <td className="col-xs-1 text-center">
             <span className="delBtn">
@@ -185,7 +195,7 @@ class Table extends React.Component {
     }
     
     return (
-      <div className = "table-container">
+      <div className="table-container">
         <table className="table">
           <thead>
             <tr>
@@ -225,13 +235,13 @@ class Canvas extends React.Component {
   render () {
     const selected = this.props.selected;
     if (selected === "KM") {
-      return <XYcoord />;
+      return <XYcoord data={this.props.data}/>;
     } else if (selected === "GM") {
-      return <XYcoord />;
+      return <XYcoord data={this.props.data}/>;
     } else if (selected === "LR") {
-      return <XYcoord />;
+      return <XYcoord data={this.props.data}/>;
     } else if (selected === "LogR") {
-      return <XYcoord />;
+      return <XYcoord data={this.props.data}/>;
     } else if (selected === "BN") {
       return <h1> Fill me with BN </h1>;
     } else if (selected === "HM") {
@@ -244,19 +254,17 @@ class Canvas extends React.Component {
   }
 }
 
-
-
 class XYcoord extends React.Component {
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
     this.state = {
-      W: window.innerWidth,
-      H: window.innerHeight,
-      cX: window.innerWidth/2,
-      centerX: 500,
-      cY: window.innerHeight/2,
-      centerY: 300,
+      W: window.innerWidth-Math.floor(window.innerWidth/4),
+      H: window.innerHeight-56,
+      cX: (window.innerWidth-Math.floor(window.innerWidth/4))/2,
+      centerX: (window.innerWidth-Math.floor(window.innerWidth/4))/2,
+      cY: (window.innerHeight-56)/2,
+      centerY: (window.innerHeight-56)/2,
       gS: 18,
       gridSize: 18,
       nS: 4,
@@ -267,7 +275,9 @@ class XYcoord extends React.Component {
       dragStartX: 0,
       dragStartY: 0,
       X: 0,
-      Y: 0
+      Y: 0,
+      oX: Math.floor(window.innerWidth/4),
+      oY: 56,
     };
 
     this.scrollZoom = this.scrollZoom.bind(this);
@@ -278,6 +288,11 @@ class XYcoord extends React.Component {
     this.updateGridSize = this.updateGridSize.bind(this);
     this.updateCenter = this.updateCenter.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+    this.generateGrids = this.generateGrids.bind(this);
+    this.generatePoints = this.generatePoints.bind(this);
+    this.showCoord = this.showCoord.bind(this);
+
   }
 
   componentDidMount() {
@@ -289,7 +304,7 @@ class XYcoord extends React.Component {
   }
 
   updateWindowDimensions () {
-    this.setState({W: window.innerWidth, H: window.innerHeight});
+    this.setState({W: window.innerWidth-Math.ceil(window.innerWidth/4), H: window.innerHeight-57});
   }
 
   updateUnitLength (zoom) {
@@ -349,10 +364,11 @@ class XYcoord extends React.Component {
   }
 
   updateCenter (Xc, Yc) {
-    this.setState(()=>({cX: Xc-this.state.X*(this.state.gS*this.state.nS)/(this.state.co*Math.pow(10,this.state.exp))}));
-    this.setState(()=>({cY: Yc+this.state.Y*(this.state.gS*this.state.nS)/(this.state.co*Math.pow(10,this.state.exp))}));
+    this.setState(()=>({cX: Xc-this.state.oX-this.state.X*(this.state.gS*this.state.nS)/(this.state.co*Math.pow(10,this.state.exp))}));
+    this.setState(()=>({cY: Yc-this.state.oY+this.state.Y*(this.state.gS*this.state.nS)/(this.state.co*Math.pow(10,this.state.exp))}));
     this.setState(()=>({centerX: this.state.cX}));
     this.setState(()=>({centerY: this.state.cY}));
+    console.log(this.state.cX, this.state.cY);
   }
 
   scrollZoom(evt) {
@@ -377,9 +393,9 @@ class XYcoord extends React.Component {
   mouseMove(evt) {
     var cursorX = evt.clientX;
     var cursorY = evt.clientY;
-    this.setState(()=>({X: (cursorX-this.state.cX)/(this.state.gS*this.state.nS)*(this.state.co*Math.pow(10,this.state.exp))}));
-    this.setState(()=>({Y: (this.state.cY-cursorY)/(this.state.gS*this.state.nS)*(this.state.co*Math.pow(10,this.state.exp))}));
-  
+    this.setState(()=>({X: (cursorX-this.state.cX-this.state.oX)/(this.state.gS*this.state.nS)*(this.state.co*Math.pow(10,this.state.exp))}));
+    this.setState(()=>({Y: (this.state.cY-cursorY+this.state.oY)/(this.state.gS*this.state.nS)*(this.state.co*Math.pow(10,this.state.exp))}));
+
     if (this.state.dragging) {
       this.setState(()=>({cX: this.state.centerX+cursorX-this.state.dragStartX}));
       this.setState(()=>({cY: this.state.centerY+cursorY-this.state.dragStartY}));
@@ -392,7 +408,7 @@ class XYcoord extends React.Component {
     this.setState(()=>({centerY: this.state.cY}));
   }
 
-  render () {
+  generateGrids() {
     var grids = [];
     var xaxis = <line key='xa' id='x-axis' x1='0' y1={this.state.cY} x2={this.state.W} y2={this.state.cY} strokeWidth='1' stroke='black'/>;
     var yaxis = <line key='ya' id='y-axis' x1={this.state.cX} y1='0' x2={this.state.cX} y2={this.state.H} strokeWidth='1' stroke='black'/>;
@@ -426,7 +442,6 @@ class XYcoord extends React.Component {
 
     for (i=yl; i<=yr; i++) {
       var x = this.state.cX + i*this.state.gS;
-      
       if (i % this.state.nS === 0) {
         grids.push(<line key={'vl'+i} className='x-grids' x1={x} y1='0' x2={x} y2={this.state.H} strokeWidth='0.5' stroke='#666666'/>);
         if (i !== 0) {
@@ -441,12 +456,36 @@ class XYcoord extends React.Component {
         grids.push(<line key={'vl'+i} className='x-grids' x1={x} y1='0' x2={x} y2={this.state.H} strokeWidth='0.5' stroke='#CCCCCC'/>);
       }
     }
+    return grids;
+  }
 
-    var coordsys = <svg className='coordsys' onWheel={this.scrollZoom} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseDown={this.mouseDown}>
-                    <g id='b'>
-                      {grids}
-                    </g>
-                  </svg>
+  generatePoints(){
+    var points = [];
+    for (var i=0; i<this.props.data.length; i++) {
+      var x = this.props.data[i][0];
+      var y = this.props.data[i][1];
+      var currX = x*(this.state.gS*this.state.nS)/(this.state.co*Math.pow(10,this.state.exp))+this.state.cX;
+      var currY = this.state.cY-y*(this.state.gS*this.state.nS)/(this.state.co*Math.pow(10,this.state.exp));
+      points.push(<circle key={i} xy={[x, y]} cx={currX} cy={currY} r="4" onMouseOver={this.showCoord}/>);
+    }
+
+    return points;
+  }
+
+  showCoord(event) {
+    var coord = event.target.attributes.getNamedItem('xy').value;
+    var coord = "(" + coord + ")";
+    console.log(coord);
+  }
+
+  render () {
+  var grids = this.generateGrids();
+  var points = this.generatePoints();
+  var coordsys = <svg className='coordsys' onWheel={this.scrollZoom} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseDown={this.mouseDown}>
+                  <g id='b'>
+                    {grids.concat(points)}
+                  </g>
+                </svg>
 
     return (
       coordsys
@@ -454,15 +493,6 @@ class XYcoord extends React.Component {
   }
 }
 
-class Points extends React.Component {
-  constructor(props) {
-    super(props);
-    // Don't call this.setState() here!
-    this.state = {type: 'points'}
-  }
-
-  
-}
 
 /*
 App
@@ -485,6 +515,12 @@ App
       GMvis
         XYcoord
         Points
+      LRvis
+        XYcoord
+        Points
+      LogRvis
+        XYcoord
+        Points
       HMvis
         Graphsys
       FGvis
@@ -496,8 +532,6 @@ App
       
       
 */
-
-
 
 ReactDOM.render(
   <App />,
