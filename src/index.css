@@ -30,7 +30,7 @@ code {
   user-select: none;
 }
 
-/* For Toolbar and XYcoord Layout*/
+/* For Sidebar and XYcoord Layout*/
 .column {
   float: left;
   padding: 0px;
@@ -41,6 +41,7 @@ code {
   width: 25%;
   height: 100%;
   overflow: auto;
+  box-shadow: -6px 0 5px 5px #333;
 }
 .right {
   width: 75%;
@@ -51,25 +52,20 @@ code {
 }
 .Sidebar {
   height: 100%;
-  overflow: auto;
 }
 .KMTools {
   height: 100%;
-  overflow: auto;
 }
 .Table {
   height: 100%;
-  overflow: auto;
 }
+
 /* For Table Layout */
 .remove {
   background: #f1f1f1;
 }
 .remove td {
   font-style: italic;
-}
-.table-container{
-  overflow: auto;
 }
 .table > tbody > tr > td {
   vertical-align: middle;
@@ -79,7 +75,86 @@ code {
 }
 .addBtn {
   cursor: pointer;
+  color: #808080;
+  font-size: 20px;
+}
+.addBtn:hover {
+  color: black;
 }
 .delBtn {
   cursor: pointer;
+  color: #808080;
+  font-size: 20px;
+}
+.delBtn:hover {
+  color: black;
+}
+.formInput {
+  width: 100px;
+}
+
+
+/* For Toolbar Layout */
+.outer-menu {
+  height: 50px;
+  background: #E8E8E8;
+  border-bottom: 1px solid #D3D3D3;  
+  min-width: 320px;
+}
+.bar {
+  display: table;   /* Allow the centering to work */
+  margin: 0 auto;
+  position: relative;
+  top: 12.5%;
+}
+.bar ul {
+  list-style: none;
+  display: -webkit-box;
+  float: none;
+  padding: 0px;
+  color: #808080;
+  background: #E8E8E8;
+}
+.bar ul li {
+  background: #E8E8E8;
+  border-radius: 10px;
+  position: relative;
+  display: block;
+  min-width: 40px;
+  cursor: pointer;
+  padding: 5px;
+  background-position: center center;
+  font-size: 18px;
+  text-align: center;
+}
+.bar ul li:hover {
+  background: #D3D3D3;
+  color: black;
+}
+.bar ul ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0%;
+  background: #E8E8E8;
+  border-radius: 10px;
+}
+.bar ul ul li {
+  float: none;
+  border-right: none;
+  border-bottom: 1px solid #D3D3D3;
+  border-radius: 0px;
+}
+.bar ul ul li:first-child {
+  border-bottom: none;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.bar ul ul li:last-child {
+  border-bottom: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.bar ul li:hover>ul {
+  display: block;
 }

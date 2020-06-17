@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { Nav, Navbar, NavDropdown, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { faPlusSquare, faMinus, faPlusCircle, faMinusSquare, faRedo, faPlay, faStepForward, faStepBackward, faFastBackward, faFastForward, faEye, faKey } from '@fortawesome/free-solid-svg-icons'
 import { findAllByDisplayValue } from '@testing-library/react';
 
 class App extends React.Component {
@@ -35,7 +35,7 @@ class Navi extends React.Component {
   render () {
     return (
       <Navbar className="navi" collapseOnSelect expand="lg" bg="dark" variant="dark">
-        <Navbar.Brand href="#home">MLCalc - machine learning calculator 0.1.1</Navbar.Brand>
+        <Navbar.Brand href="#home">MLCalc - ML Calculator 0.1.1</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
@@ -78,6 +78,7 @@ class Calc extends React.Component {
   }
 
   editPoint (type, id, val) {
+    console.log("edit point: ", id);
     var idx = id.slice(0,-1);
     var coord = id.charAt(id.length-1);
     if (type === "data") {
@@ -100,14 +101,19 @@ class Calc extends React.Component {
   }
 
   deletePoint (type, id) {
+    console.log("clicked delete: ", );
     if (type === "data") {
+      console.log("reached data");  
       var newData = [];
+      console.log("new data 1: ", newData);  
       for (var i=0; i<this.state.data.length; i++) {
+        console.log(i, parseInt(id));
         if (i !== parseInt(id)) {
           newData.push(this.state.data[i]);
         }
       }
       this.setState({data: newData});
+      console.log("new data 2: ", newData);  
     } else if (type === "center") {
       var newCenters = [];
       for (var i=0; i<this.state.centers.length; i++) {
@@ -117,8 +123,6 @@ class Calc extends React.Component {
       }
       this.setState({centers: newCenters});
     }
-
-
   }
 
   render () {
@@ -149,7 +153,6 @@ class Sidebar extends React.Component {
     super(props);
     this.state = {selected: "KM"};
   }
-
   render () {
     const selected = this.props.selected;
     var tools = undefined;
@@ -180,10 +183,65 @@ class Sidebar extends React.Component {
 function KMTools(props) {
   return (
     <div id='KMTools'>
-      <Table tableType="data" data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
-      <Table tableType="center" centers={props.centers} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
+      <KMengine /> 
+      <div className="KMtable1">
+        <Table tableType="data" data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
+      </div>
+      <div className="KMtable2">
+        <Table tableType="center" centers={props.centers} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
+      </div>
     </div>
   );
+}
+
+
+class KMengine extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = {};
+  }
+  render () {
+    return (
+      <div className="outer-menu">
+        <div className="bar">
+          <ul>
+            <li title="Start Over">
+              <FontAwesomeIcon icon={faRedo} />
+            </li>
+            <li title="Autoplay"> 
+              <FontAwesomeIcon icon={faPlay} />
+            </li>
+            <li title="Prev. Iter.">
+              <FontAwesomeIcon icon={faStepBackward} />
+            </li>
+            <li title="Next Iter."> 
+              <FontAwesomeIcon icon={faStepForward} />
+            </li>
+            <li title="Prev. 10× Iter.">
+              <FontAwesomeIcon icon={faFastBackward} />
+            </li>
+            <li title="Next 10× Iter.">
+              <FontAwesomeIcon icon={faFastForward} />
+            </li>
+            <li title="Final Result">
+              <FontAwesomeIcon icon={faKey} />
+            </li>
+            <li title="view">
+                <FontAwesomeIcon icon={faEye} />
+                <ul>
+                    <li title="Hide Shadows">
+                      <FontAwesomeIcon icon={faEye} />
+                    </li>
+                    <li title="Hide Lines">
+                      <FontAwesomeIcon icon={faEye} />
+                    </li>
+                </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
 }
 
 class Table extends React.Component {
@@ -192,6 +250,7 @@ class Table extends React.Component {
     this.state = {inputX: '', inputY: ''};
     this.editX = this.editX.bind(this);
     this.editY = this.editY.bind(this);
+    this.navigateTable = this.navigateTable.bind(this);
   }
 
   editX (event) {
@@ -200,6 +259,56 @@ class Table extends React.Component {
 
   editY (event) {
     this.setState({inputY: event.target.value});
+  }
+
+  navigateTable (event) {
+
+    var arrow = {
+      left: 37,
+      up: 38,
+      right: 39,
+      down: 40
+    };
+
+    var id = event.target.id;
+
+    console.log('oldId: ',id);
+    var rowId = id.slice(0, id.length-1);
+    var colId = id[id.length-1];
+    var key = event.keyCode;
+    var newId = id;
+    switch (key) {
+      case arrow.left:
+        {
+          if (colId === '1') {
+            newId = rowId + '0';
+          }
+          break;
+        }
+      case arrow.right:
+        {
+          if (colId === '0') {
+            newId = rowId + '1';
+          }
+          break;
+        }
+      case arrow.up:
+        {
+          if (rowId !== '0') {
+            newId = (parseInt(id[0])-1) + colId;
+          }
+          break;
+        }
+      case arrow.down:
+        {
+          if (rowId !== (this.props.data.length).toString()) {
+            newId = (parseInt(id[0])+1) + colId;
+          }
+          break;
+        }
+    }
+    console.log('newId: ', newId);
+    document.getElementById(newId).focus();
   }
 
   render () {
@@ -215,16 +324,20 @@ class Table extends React.Component {
     var list = [];
     for (var i=0; i<points.length; i++){
       list.push(
-        <tr>
-          <td className="col-xs-3">
-            <input id={i+"0"} className="form-control border-0" type="text" value={points[i][0]} onChange={e=>this.props.editPoint(tableType, e.target.id, e.target.value)}/>
+        <tr key={'tr'+i}>
+          <td >
+            <input id={(i+1)+"0"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
+            onChange={e=>this.props.editPoint(tableType, e.target.id, e.target.value)} 
+            onKeyDown={this.navigateTable} />
           </td>
-          <td className="col-xs-3">
-            <input id={i+"1"} className="form-control border-0" type="text" value={points[i][1]} onChange={e=>this.props.editPoint(tableType, e.target.id, e.target.value)}/>
+          <td >
+            <input id={(i+1)+"1"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
+            onChange={e=>this.props.editPoint(tableType, e.target.id, e.target.value)} 
+            onKeyDown={this.navigateTable} />
           </td>
-          <td className="col-xs-1 text-center">
-            <span className="delBtn">
-              <FontAwesomeIcon id={i} icon={faMinus} onClick={e=>this.props.deletePoint(tableType, e.target.id)}/>
+          <td >
+            <span id={'del'+i} className="delBtn" onClick={(e)=>this.props.deletePoint(tableType, e.target.id)}>
+              <FontAwesomeIcon icon={faPlusSquare}/>
             </span>
           </td>
         </tr>
@@ -236,15 +349,17 @@ class Table extends React.Component {
         <table className="table">
           <tbody>
             <tr>
-              <td className="col-xs-3">
-                <input className="form-control addX" name="inputX" type="text" placeholder="Enter X" onChange={this.editX}/>
+              <td>
+                <input id="00" name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
+                onChange={this.editX} onKeyDown={this.navigateTable}/>
               </td>
-              <td className="col-xs-3">
-                <input className="form-control addY" name="inputY" type="text" placeholder="Enter Y" onChange={this.editY}/>
+              <td>
+                <input id="01" name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
+                onChange={this.editY} onKeyDown={this.navigateTable}/>
               </td>
-              <td className="col-xs-1 text-center">
-                <span >
-                  <FontAwesomeIcon className="addBtn" icon={faPlus} onClick={()=>this.props.addPoint(tableType, this.state.inputX, this.state.inputY)}/>
+              <td>
+                <span className="addBtn" onClick={()=>this.props.addPoint(tableType, this.state.inputX, this.state.inputY)}>
+                  <FontAwesomeIcon icon={faPlusSquare}/>
                 </span>
               </td>
             </tr>
@@ -324,7 +439,6 @@ class XYcoord extends React.Component {
     this.generateData = this.generateData.bind(this);
     this.generateCenters = this.generateCenters.bind(this);
     this.showCoord = this.showCoord.bind(this);
-
   }
 
   componentDidMount() {
@@ -449,30 +563,35 @@ class XYcoord extends React.Component {
     
     var digits = (this.state.co*(j/this.state.nS)).toString();
     var shift = this.state.exp;
-    if (shift >= 0) {
+    var mag = shift+digits.length-1;
+    while (digits[digits.length-1] === '0') {
+      digits = digits.slice(0,-1);
+      shift += 1;
+    }
+    if ((mag>0) && (mag<=4)) {
       var tick = digits+'0'.repeat(shift);
-    } else if (shift < 0) {
-      while (digits[digits.length-1] === '0') {
-        digits = digits.slice(0,-1);
-        shift += 1;
-      }
-      var numZeros = -shift+1-digits.length;
-      if (numZeros > 0) {
+    } else if ((mag<=0) && (mag>=-4)) {
+      var numZeros = -mag;
+      if (numZeros>0) {
         var tick = '0.'+'0'.repeat(numZeros-1)+digits;
-      } else if (numZeros == 0) {
+      } else if (numZeros==0 && shift==0) {
         var tick = digits;
       } else {
         var tick = digits.slice(0,(-numZeros+1))+'.'+digits.slice((-numZeros+1),digits.length);
       }
-      console.log(tick);
+    } else {
+      shift += digits.length-1;
+      if (digits.length == 1) { 
+        var tick = digits +'×10' + shift;
+      } else {
+        var tick = digits[0] + '.' + digits.slice(1,digits.length) +'×10' + shift;
+      }
     }
-    //console.log(digits, shift, tick);
     if (negative) {
       return '-'+tick;
     } else {
       return tick;
     }
-
   }
 
   generateGrids() {
@@ -496,7 +615,8 @@ class XYcoord extends React.Component {
       if (i % this.state.nS === 0) {
         grids.push(<line key={'hl'+i} className='x-grids' x1='0' y1={y} x2={this.state.W} y2={y} strokeWidth='0.5' stroke='#666666'/>);
         if (i !== 0) {
-          grids.push(<text key={'ht'+i} className='tick' x={this.state.cX-3} y={y+5} fill='black' fontSize='10pt' textAnchor='end' fontFamily="math">{this.generateTick(-i)}</text>);
+        grids.push(<text key={'ht'+i} className='tick' x={this.state.cX-3} y={y+5} fill='black' fontSize='10pt' textAnchor='end' fontFamily="math">{this.generateTick(-i)}</text>);
+
         }
       }
       else {
@@ -509,10 +629,6 @@ class XYcoord extends React.Component {
       if (i % this.state.nS === 0) {
         grids.push(<line key={'vl'+i} className='x-grids' x1={x} y1='0' x2={x} y2={this.state.H} strokeWidth='0.5' stroke='#666666'/>);
         if (i !== 0) {
-          var xval = this.state.co*(1/Math.pow(10,-this.state.exp))*(i/this.state.nS);
-          if (Math.abs(this.state.exp) >= 6) {
-              xval = xval.toExponential();
-          }
           grids.push(<text key={'vt'+i} className='tick' x={x} y={this.state.cY+12} fill='black' fontSize='10pt' textAnchor='middle' fontFamily="math">{this.generateTick(i)}</text>);
         }
       }
