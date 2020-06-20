@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { Nav, Navbar, NavDropdown, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusSquare, faMinus, faPlusCircle, faMinusSquare, faRedo, faPlay, faStepForward, faStepBackward, faFastBackward, faFastForward, faEye, faKey } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus, faRedo, faPlay, faStepForward, faStepBackward, faFastBackward, faFastForward, faEye, faKey } from '@fortawesome/free-solid-svg-icons'
 import { findAllByDisplayValue } from '@testing-library/react';
 
 class App extends React.Component {
@@ -13,7 +13,6 @@ class App extends React.Component {
     super(props);
     this.state = {selected: "KM"};
     this.selectModule = this.selectModule.bind(this);
-    
   }
 
   selectModule (mod) {
@@ -72,17 +71,17 @@ class Navi extends React.Component {
 class Calc extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {data: [[2,2],[4,4],[2,4],[4,2],[-2,-2],[-2,-4],[-4,-2],[-4,-4]], 
+    this.state = {SVGHeight: window.innerHeight-56, data: [[2,2],[4,4],[2,4],[4,2],[-2,-2],[-2,-4],[-4,-2],[-4,-4]], 
                   centers: [[[1,1],[-1,-1],[10.0,10.0]],[[1.5,1.5],[-1.5,-1.5],[10.0,10.0]]], currIteration: 0};
     this.addPoint = this.addPoint.bind(this);
     this.deletePoint = this.deletePoint.bind(this);
     this.editPoint = this.editPoint.bind(this);
     this.setIteration = this.setIteration.bind(this);
     this.updateCenters = this.updateCenters.bind(this);
+    this.updateHeight = this.updateHeight.bind(this);
   }
 
   setIteration (iteration) {
-    console.log("entered setIteration");
     this.setState({currIteration: iteration});
   }
 
@@ -102,9 +101,7 @@ class Calc extends React.Component {
 
   updateCenters (centers) {
     var newCenters = centers;
-    console.log("UPDATECENTERS: ", newCenters);
-    this.setState({centers: this.state.centers.concat([newCenters])});
-    console.log("updated centers are ", this.state.centers);
+    this.setState({centers: this.state.centers.concat([newCenters])})
   }
 
   addPoint (type, inputX, inputY) {
@@ -135,6 +132,10 @@ class Calc extends React.Component {
     }
   }
 
+  updateHeight() {
+    this.setState({SVGHeight: window.innerHeight-56});
+  }
+
   render () {
     var selected = this.props.selected;
     if (selected === "KM") {
@@ -149,12 +150,33 @@ class Calc extends React.Component {
       var canvas = <Canvas selected={selected} data={data} centers={centers} currIteration={currIteration}/>;
     }
 
+    var columnStyle = {
+      float: 'left',
+      padding: '0px',
+      height: '100%',
+      flex: '1'
+    }
+    
+    var leftStyle = {
+      width: '25%',
+      overflow: 'auto',
+      boxShadow: '-6px 0 5px 5px #333',
+      height: this.state.SVGHeight
+    }
+
+    var rightStyle = {
+      width: '75%',
+      height: this.state.SVGHeight
+    }
+
+    window.addEventListener('resize', this.updateHeight);
+
     return (
       <div id='calc'>
-        <div className='column left'>
+        <div id='leftColumn' style={Object.assign({}, columnStyle, leftStyle)}>
           {sidebar}
         </div>
-        <div className='column right'>
+        <div id='rightColumn' style={Object.assign({}, columnStyle, rightStyle)}>
           {canvas}
         </div>
       </div>
@@ -203,12 +225,8 @@ function KMTools(props) {
     <div id='KMTools'>
         <KMengine data={props.data} centers={props.centers} currIteration={props.currIteration}
         updateCenters={props.updateCenters} setIteration={props.setIteration}/> 
-      <div className="KMtable1">
         <Table tableType="data" data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
-      </div>
-      <div className="KMtable2">
         <Table tableType="center" centers={props.centers} currIteration={props.currIteration} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
-      </div>
     </div>
   );
 }
@@ -276,11 +294,9 @@ class KMengine extends React.Component {
           }
           newCenters.push([xSum/groupLength, ySum/groupLength]);
         } else {
-          console.log("reached here");
           newCenters.push(currCenters[i]);
         }
       }
-      console.log("new centers are ", newCenters);
       this.props.updateCenters(newCenters);
       this.props.setIteration(this.props.currIteration+1);
     }
@@ -304,11 +320,11 @@ class KMengine extends React.Component {
             <li data-title="Next Step"> 
               <FontAwesomeIcon icon={faStepForward} />
             </li>
-            <li data-title="Prev. Iter.">
-              <FontAwesomeIcon icon={faFastBackward} onClick={this.accessPreviousIteration}/>
+            <li data-title="Prev. Iter." onClick={this.accessPreviousIteration}>
+              <FontAwesomeIcon icon={faFastBackward} />
             </li>
-            <li data-title="Next Iter.">
-              <FontAwesomeIcon icon={faFastForward} onClick={this.computeNextIteration}/>
+            <li data-title="Next Iter." onClick={this.computeNextIteration}>
+              <FontAwesomeIcon icon={faFastForward}/>
             </li>
             <li data-title="Final Result">
               <FontAwesomeIcon icon={faKey} />
@@ -334,22 +350,94 @@ class KMengine extends React.Component {
 class Table extends React.Component {
   constructor (props) {
     super(props);
-    this.state = {inputX: '', inputY: ''};
+    this.state = {inputX: '', inputY: '', validX: false, validY: false, 
+                  lastInvalid: false, lastValidValue: null, lastFocusId: null};
     this.editX = this.editX.bind(this);
     this.editY = this.editY.bind(this);
+    this.addXY = this.addXY.bind(this);
+    this.isNumeric = this.isNumeric.bind(this);
     this.navigateTable = this.navigateTable.bind(this);
+    this.correctLastInput = this.correctLastInput.bind(this);
+    this.initializeValidValue = this.initializeValidValue.bind(this);
   }
 
-  editX (event) {
-    this.setState({inputX: event.target.value});
+  isNumeric (value) {
+    return !isNaN(value);
   }
 
-  editY (event) {
-    this.setState({inputY: event.target.value});
+  editX (type, id, value) {
+    this.setState({lastFocusId: id});
+    var rowId = id.slice(1, id.length-1);
+    if (rowId === '0') {
+      if (this.isNumeric(value)) {
+        this.setState({lastInvalid: false});
+        this.setState({lastValidValue: value});
+        this.setState({inputX: value, validX: true});
+      } else {
+        this.setState ({validX: false});
+      }
+    } else if (value.length == 0) {
+        console.log("reached length == 0 ");
+        this.setState({lastInvalid: true});
+        this.setState({lastValidValue: '0'});
+        this.props.editPoint(type, id, value);
+    } else if (this.isNumeric(value)) {
+        this.setState({lastInvalid: false});
+        this.setState({lastValidValue: value});
+        this.props.editPoint(type, id, value);
+    } else {
+        this.setState({lastInvalid: true});
+        this.props.editPoint(type, id, value);
+    }
+  }
+
+  editY (type, id, value) {
+    this.setState({lastFocusId: id});
+    var rowId = id.slice(1, id.length-1);
+    if (rowId === '0') {
+      if (this.isNumeric(value)) {
+        this.setState({lastInvalid: false});
+        this.setState({lastValidValue: value});
+        this.setState({inputY: value, validY: true});
+      } else {
+        this.setState ({validY: false});
+      }
+    } else if (value.length == 0) {
+        console.log("reached length == 0 ");
+        this.setState({lastInvalid: true});
+        this.setState({lastValidValue: '0'});
+        this.props.editPoint(type, id, value);
+    } else if (this.isNumeric(value)) {
+        this.setState({lastInvalid: false});
+        this.setState({lastValidValue: value});
+        this.props.editPoint(type, id, value);
+    } else {
+        this.setState({lastInvalid: true});
+        this.props.editPoint(type, id, value);
+    }
+    //e=>this.props.editPoint(tableType, e.target.id, e.target.value)
+  }
+
+  addXY (type) {
+    if (this.state.validX && this.state.validY) {
+      console.log("reached here");
+      this.props.addPoint(type, this.state.inputX, this.state.inputY);
+    }
+  }
+
+  correctLastInput () {
+    if (this.state.lastInvalid) {
+      console.log("reached invalid");
+      console.log(this.props.tableType, this.state.lastFocusId, this.state.lastValidValue);
+      this.props.editPoint(this.props.tableType, this.state.lastFocusId, this.state.lastValidValue);
+    }
+  }
+
+  initializeValidValue (e) {
+    this.setState({lastValidValue: e.target.value});
   }
 
   navigateTable (event) {
-
     var arrow = {
       left: 37,
       up: 38,
@@ -429,15 +517,12 @@ class Table extends React.Component {
   render () {
     var tableType = this.props.tableType;
     var points = null;
-    var title = null;
     var type = null;
     if (tableType == "data") {
       points = this.props.data;
-      title = "Data Points";
       type = "p";
     } else if (tableType == "center") {
       points = this.props.centers[this.props.currIteration];
-      title = "Cluster Centers";
       type = "c";
     }
 
@@ -445,42 +530,37 @@ class Table extends React.Component {
     for (var i=0; i<points.length; i++){
       list.push(
         <tr key={'tr'+i}>
-          <td >
+          <td>
             <input id={type+(i+1)+"0"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
-            onChange={e=>this.props.editPoint(tableType, e.target.id, e.target.value)} 
-            onKeyDown={this.navigateTable} />
+            onChange={e=>this.editX(tableType, e.target.id, e.target.value)} 
+            onKeyDown={this.navigateTable} onFocus={this.initializeValidValue} onBlur={this.correctLastInput}/>
           </td>
           <td >
             <input id={type+(i+1)+"1"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
-            onChange={e=>this.props.editPoint(tableType, e.target.id, e.target.value)} 
-            onKeyDown={this.navigateTable} />
+            onChange={e=>this.editY(tableType, e.target.id, e.target.value)} 
+            onKeyDown={this.navigateTable} onFocus={this.initializeValidValue} onBlur={this.correctLastInput}/>
           </td>
-          <td >
-            <span id={'d'+i} className="delBtn" onClick={(e)=>this.props.deletePoint(tableType, e.target.id)}>
-              <FontAwesomeIcon icon={faMinusSquare}/>
-            </span>
+          <td>
+            <FontAwesomeIcon icon={faMinus} id={'d'+i} className="delBtn" onClick={(e)=>this.props.deletePoint(tableType, e.target.id)}/>
           </td>
         </tr>
       );
     }
     return (
-      <div className="table-container" id={tableType}>
-        <h4>{title}</h4>
+      <div className="table-container" id={tableType+'Table'}>
         <table className="table">
           <tbody>
             <tr>
               <td>
                 <input id={type+"00"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
-                onChange={this.editX} onKeyDown={this.navigateTable}/>
+                onChange={e=>this.editX(tableType, e.target.id, e.target.value)} onKeyDown={this.navigateTable}/>
               </td>
               <td>
                 <input id={type+"01"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
-                onChange={this.editY} onKeyDown={this.navigateTable}/>
+                onChange={e=>this.editY(tableType, e.target.id, e.target.value)} onKeyDown={this.navigateTable}/>
               </td>
               <td>
-                <span className="addBtn" onClick={()=>this.props.addPoint(tableType, this.state.inputX, this.state.inputY)}>
-                  <FontAwesomeIcon icon={faPlusSquare}/>
-                </span>
+                <FontAwesomeIcon icon={faPlus} className="addBtn" onClick={e=>this.addXY(tableType)}/>
               </td>
             </tr>
             {list}
@@ -810,6 +890,7 @@ class XYcoord extends React.Component {
     );
   }
 }
+
 
 
 /*
