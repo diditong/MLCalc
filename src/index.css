@@ -2,9 +2,14 @@ html, body, #calc, .Card, .Calc, .App, #root, #wrap  {
   height: 100%;
 }
 
+html,
+body {
+  margin: 0;
+}
+
 #wrap {
   display: flex;
-  flex-direction: column;
+  flex-flow: column;
 }
 
 body {
@@ -30,6 +35,32 @@ code {
   user-select: none;
 }
 
+/* For Navigation Bar */
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+
 /* For Sidebar and XYcoord Layout*/
 .column {
   float: left;
@@ -40,7 +71,7 @@ code {
 .left {
   width: 25%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   box-shadow: -6px 0 5px 5px #333;
 }
 .right {
@@ -56,10 +87,6 @@ code {
 .KMTools {
   height: 100%;
 }
-.Table {
-  height: 100%;
-}
-
 /* For Table Layout */
 .remove {
   background: #f1f1f1;
@@ -90,9 +117,32 @@ code {
   color: black;
 }
 .formInput {
-  width: 100px;
+  max-width: 120px;
+}
+#data {
+  min-width: 320px;
+  color: red;
+  height: 300px;
+  overflow: hidden;
+
+}
+#center {
+  color: green;
+  height: 200px;
+  overflow: hidden;
+
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
 /* For Toolbar Layout */
 .outer-menu {
@@ -158,3 +208,32 @@ code {
 .bar ul li:hover>ul {
   display: block;
 }
+
+/* Toolbar button title*/
+
+/*
+[data-title]:hover:after {
+  opacity: 1;
+  transition: all 0.1s ease 0.5s;
+  visibility: visible;
+}
+[data-title]:after {
+  content: attr(data-title);
+  background-color: #00FF00;
+  color: #111;
+  font-size: 150%;
+  position: absolute;
+  padding: 1px 5px 2px 5px;
+  bottom: -1.6em;
+  left: 100%;
+  white-space: nowrap;
+  box-shadow: 1px 1px 3px #222222;
+  opacity: 0;
+  border: 1px solid #111111;
+  z-index: 99999;
+  visibility: hidden;
+}
+[data-title] {
+  position: relative;
+}
+*/

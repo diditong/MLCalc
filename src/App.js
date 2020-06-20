@@ -68,18 +68,26 @@ class Navi extends React.Component {
   }
 }
 
+
 class Calc extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {data: [], centers: []};
+    this.state = {data: [[2,2],[4,4],[2,4],[4,2],[-2,-2],[-2,-4],[-4,-2],[-4,-4]], 
+                  centers: [[[1,1],[-1,-1],[10.0,10.0]],[[1.5,1.5],[-1.5,-1.5],[10.0,10.0]]], currIteration: 0};
     this.addPoint = this.addPoint.bind(this);
     this.deletePoint = this.deletePoint.bind(this);
     this.editPoint = this.editPoint.bind(this);
+    this.setIteration = this.setIteration.bind(this);
+    this.updateCenters = this.updateCenters.bind(this);
+  }
+
+  setIteration (iteration) {
+    console.log("entered setIteration");
+    this.setState({currIteration: iteration});
   }
 
   editPoint (type, id, val) {
-    console.log("edit point: ", id);
-    var idx = id.slice(0,-1);
+    var idx = id.slice(1,-1)-1;
     var coord = id.charAt(id.length-1);
     if (type === "data") {
       var newData = [...this.state.data];
@@ -88,36 +96,38 @@ class Calc extends React.Component {
     } else if (type === "center") {
       var newCenters = [...this.state.centers];
       newCenters[idx][coord] = val;
-      this.setState({data: newCenters});
+      this.setState({centers: newCenters});
     }
+  }
+
+  updateCenters (centers) {
+    var newCenters = centers;
+    console.log("UPDATECENTERS: ", newCenters);
+    this.setState({centers: this.state.centers.concat([newCenters])});
+    console.log("updated centers are ", this.state.centers);
   }
 
   addPoint (type, inputX, inputY) {
     if (type === "data") {
-      this.setState({data: [[parseFloat(inputX), parseFloat(inputY)]].concat(this.state.data)});
+      this.setState({data: [[inputX, inputY]].concat(this.state.data)});
     } else if (type === "center") {
-      this.setState({centers: [[parseFloat(inputX), parseFloat(inputY)]].concat(this.state.centers)});
+      this.setState({centers: [[inputX, inputY]].concat(this.state.centers)});
     }
   }
 
   deletePoint (type, id) {
-    console.log("clicked delete: ", );
     if (type === "data") {
-      console.log("reached data");  
       var newData = [];
-      console.log("new data 1: ", newData);  
       for (var i=0; i<this.state.data.length; i++) {
-        console.log(i, parseInt(id));
-        if (i !== parseInt(id)) {
+        if (("d"+i) !== id) {
           newData.push(this.state.data[i]);
         }
       }
       this.setState({data: newData});
-      console.log("new data 2: ", newData);  
     } else if (type === "center") {
       var newCenters = [];
       for (var i=0; i<this.state.centers.length; i++) {
-        if (i !== parseInt(id)) {
+        if (("d"+i) !== id) {
           newCenters.push(this.state.centers[i]);
         }
       }
@@ -130,8 +140,13 @@ class Calc extends React.Component {
     if (selected === "KM") {
       var data = this.state.data;
       var centers = this.state.centers;
-      var sidebar = <Sidebar selected={selected} data={data} centers={centers} selectModule={this.selectModule} addPoint={this.addPoint} deletePoint={this.deletePoint} editPoint={this.editPoint}/>;
-      var canvas = <Canvas selected={selected} data={data} centers={centers} />;
+      var currIteration = this.state.currIteration;
+      var sidebar = <Sidebar selected={selected} data={data} centers={centers} currIteration={currIteration} 
+                      addPoint={this.addPoint} deletePoint={this.deletePoint} 
+                      editPoint={this.editPoint} updateCenters={this.updateCenters}
+                      setIteration={this.setIteration}
+                      />;
+      var canvas = <Canvas selected={selected} data={data} centers={centers} currIteration={currIteration}/>;
     }
 
     return (
@@ -157,7 +172,10 @@ class Sidebar extends React.Component {
     const selected = this.props.selected;
     var tools = undefined;
     if (selected === "KM") {
-      tools = <KMTools data={this.props.data} centers={this.props.centers} addPoint={this.props.addPoint} deletePoint={this.props.deletePoint} editPoint={this.props.editPoint}/>;
+      tools = <KMTools data={this.props.data} centers={this.props.centers} currIteration={this.props.currIteration}
+              addPoint={this.props.addPoint} deletePoint={this.props.deletePoint} 
+              editPoint={this.props.editPoint} updateCenters={this.props.updateCenters}
+              setIteration={this.props.setIteration}/>; 
     } else if (selected === "GM") {
       tools = <h1> I'm GM </h1>;
     } else if (selected === "LR") {
@@ -183,12 +201,13 @@ class Sidebar extends React.Component {
 function KMTools(props) {
   return (
     <div id='KMTools'>
-      <KMengine /> 
+        <KMengine data={props.data} centers={props.centers} currIteration={props.currIteration}
+        updateCenters={props.updateCenters} setIteration={props.setIteration}/> 
       <div className="KMtable1">
         <Table tableType="data" data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
       </div>
       <div className="KMtable2">
-        <Table tableType="center" centers={props.centers} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
+        <Table tableType="center" centers={props.centers} currIteration={props.currIteration} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint}/>
       </div>
     </div>
   );
@@ -199,40 +218,108 @@ class KMengine extends React.Component {
   constructor (props) {
     super(props);
     this.state = {};
+    this.computeNextStep = this.computeNextStep.bind(this);
+    this.computeNextIteration = this.computeNextIteration.bind(this);
+    this.accessPreviousIteration = this.accessPreviousIteration.bind(this);
   }
+
+  computeNextStep () {
+    
+  }
+  
+  accessPreviousIteration () {
+    if (this.props.currIteration != 0) {
+      this.props.setIteration(this.props.currIteration-1);
+    }
+  }
+
+  computeNextIteration () {
+    var data = this.props.data;
+    var currCenters = this.props.centers[this.props.currIteration];
+    var currDataPoint = null;
+    if (this.props.currIteration < this.props.centers.length-1) {
+      this.props.setIteration(this.props.currIteration+1);
+    } else {
+      var newCenters = [];
+      var dictForUpdateCenters = {};
+      for (var i=0; i<currCenters.length; i++) {
+        dictForUpdateCenters[i] = [];
+      }
+      
+      
+      for (var i=0; i<data.length; i++) {
+        currDataPoint = data[i];
+        var minDistance = Number.MAX_VALUE;
+        var minIndex = 0;
+        var currDistance = null;
+        for (var j=0; j<currCenters.length; j++) {
+          currDistance = Math.pow((currDataPoint[0]-currCenters[j][0]),2)+Math.pow((currDataPoint[1]-currCenters[j][1]),2);
+          if (currDistance < minDistance) {
+            minDistance = currDistance;
+            minIndex = j;
+          }
+        }
+        dictForUpdateCenters[minIndex].push([currDataPoint[0], currDataPoint[1]]);
+      }
+      var values = Object.values(dictForUpdateCenters);
+      for (var i=0; i<values.length; i++) {
+        var currGroup = values[i];
+        var groupLength = currGroup.length;
+        if (groupLength) {
+          var currPoint = null;
+          var xSum = 0;
+          var ySum = 0;
+          for (var j=0; j<groupLength; j++) {
+            currPoint = currGroup[j];
+            xSum += currPoint[0];
+            ySum += currPoint[1];
+          }
+          newCenters.push([xSum/groupLength, ySum/groupLength]);
+        } else {
+          console.log("reached here");
+          newCenters.push(currCenters[i]);
+        }
+      }
+      console.log("new centers are ", newCenters);
+      this.props.updateCenters(newCenters);
+      this.props.setIteration(this.props.currIteration+1);
+    }
+  }
+
+
   render () {
     return (
       <div className="outer-menu">
         <div className="bar">
           <ul>
-            <li title="Start Over">
+            <li data-title="Start Over"> 
               <FontAwesomeIcon icon={faRedo} />
             </li>
-            <li title="Autoplay"> 
+            <li data-title="Autoplay"> 
               <FontAwesomeIcon icon={faPlay} />
             </li>
-            <li title="Prev. Iter.">
+            <li data-title="Prev. Step">
               <FontAwesomeIcon icon={faStepBackward} />
             </li>
-            <li title="Next Iter."> 
+            <li data-title="Next Step"> 
               <FontAwesomeIcon icon={faStepForward} />
             </li>
-            <li title="Prev. 10× Iter.">
-              <FontAwesomeIcon icon={faFastBackward} />
+            <li data-title="Prev. Iter.">
+              <FontAwesomeIcon icon={faFastBackward} onClick={this.accessPreviousIteration}/>
             </li>
-            <li title="Next 10× Iter.">
-              <FontAwesomeIcon icon={faFastForward} />
+            <li data-title="Next Iter.">
+              <FontAwesomeIcon icon={faFastForward} onClick={this.computeNextIteration}/>
             </li>
-            <li title="Final Result">
+            <li data-title="Final Result">
               <FontAwesomeIcon icon={faKey} />
             </li>
-            <li title="view">
+            <li data-title="View">
                 <FontAwesomeIcon icon={faEye} />
                 <ul>
-                    <li title="Hide Shadows">
+                    <li data-title="Hide Shadows">
                       <FontAwesomeIcon icon={faEye} />
                     </li>
-                    <li title="Hide Lines">
+                    <li data-title="Hide Lines">
                       <FontAwesomeIcon icon={faEye} />
                     </li>
                 </ul>
@@ -270,55 +357,88 @@ class Table extends React.Component {
       down: 40
     };
 
-    var id = event.target.id;
+    var input = event.target;
 
-    console.log('oldId: ',id);
-    var rowId = id.slice(0, id.length-1);
+    var id = event.target.id;
+    var typeId = id[0];
+    var rowId = id.slice(1, id.length-1);
     var colId = id[id.length-1];
     var key = event.keyCode;
     var newId = id;
+    var start = null;
+    var end = null;
+    var newInput = null;
+    var inputLength = null;
+    if (this.props.tableType==='data') {
+      inputLength = (this.props.data.length).toString();
+    } else if (this.props.tableType==='center') {
+      inputLength = (this.props.centers.length).toString();
+    }
+
     switch (key) {
       case arrow.left:
-        {
-          if (colId === '1') {
-            newId = rowId + '0';
-          }
+        { 
+          if ((colId==='1') && (input.selectionStart==0)) { 
+            newId = typeId + rowId + '0';
+            newInput = document.getElementById(newId);
+            start = newInput.value.length;
+            end = newInput.value.length;
+        }
           break;
         }
       case arrow.right:
         {
-          if (colId === '0') {
-            newId = rowId + '1';
+          if ((colId === '0') && (input.selectionEnd==input.value.length)) {
+            newId = typeId + rowId + '1';
+            newInput = document.getElementById(newId);
+            start = 0;
+            end = 0;
           }
           break;
         }
       case arrow.up:
         {
           if (rowId !== '0') {
-            newId = (parseInt(id[0])-1) + colId;
+            newId = typeId + (parseInt(rowId)-1) + colId;
+            newInput = document.getElementById(newId);
+            start = input.selectionStart;
+            end = input.selectionStart;
           }
           break;
         }
       case arrow.down:
         {
-          if (rowId !== (this.props.data.length).toString()) {
-            newId = (parseInt(id[0])+1) + colId;
+          if (rowId !== inputLength) {
+            newId = typeId + (parseInt(rowId)+1) + colId;
+            newInput = document.getElementById(newId);
+            start = input.selectionStart;
+            end = input.selectionStart;
           }
           break;
         }
     }
-    console.log('newId: ', newId);
-    document.getElementById(newId).focus();
+
+    if (newId !== id) {
+      event.preventDefault();
+      newInput.focus();
+      newInput.selectionStart = start;
+      newInput.selectionEnd = end;
+    }
   }
 
   render () {
     var tableType = this.props.tableType;
+    var points = null;
+    var title = null;
+    var type = null;
     if (tableType == "data") {
-      var points = this.props.data;
-      var title = "Data Points";
+      points = this.props.data;
+      title = "Data Points";
+      type = "p";
     } else if (tableType == "center") {
-      var points = this.props.centers;
-      var title = "Cluster Centers";
+      points = this.props.centers[this.props.currIteration];
+      title = "Cluster Centers";
+      type = "c";
     }
 
     var list = [];
@@ -326,35 +446,35 @@ class Table extends React.Component {
       list.push(
         <tr key={'tr'+i}>
           <td >
-            <input id={(i+1)+"0"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
+            <input id={type+(i+1)+"0"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
             onChange={e=>this.props.editPoint(tableType, e.target.id, e.target.value)} 
             onKeyDown={this.navigateTable} />
           </td>
           <td >
-            <input id={(i+1)+"1"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
+            <input id={type+(i+1)+"1"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
             onChange={e=>this.props.editPoint(tableType, e.target.id, e.target.value)} 
             onKeyDown={this.navigateTable} />
           </td>
           <td >
-            <span id={'del'+i} className="delBtn" onClick={(e)=>this.props.deletePoint(tableType, e.target.id)}>
-              <FontAwesomeIcon icon={faPlusSquare}/>
+            <span id={'d'+i} className="delBtn" onClick={(e)=>this.props.deletePoint(tableType, e.target.id)}>
+              <FontAwesomeIcon icon={faMinusSquare}/>
             </span>
           </td>
         </tr>
       );
     }
     return (
-      <div className="table-container">
+      <div className="table-container" id={tableType}>
         <h4>{title}</h4>
         <table className="table">
           <tbody>
             <tr>
               <td>
-                <input id="00" name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
+                <input id={type+"00"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
                 onChange={this.editX} onKeyDown={this.navigateTable}/>
               </td>
               <td>
-                <input id="01" name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
+                <input id={type+"01"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
                 onChange={this.editY} onKeyDown={this.navigateTable}/>
               </td>
               <td>
@@ -369,7 +489,6 @@ class Table extends React.Component {
       </div>
     );
   }
-  
 }
 
 class Canvas extends React.Component {
@@ -381,13 +500,13 @@ class Canvas extends React.Component {
   render () {
     const selected = this.props.selected;
     if (selected === "KM") {
-      return <XYcoord data={this.props.data} centers={this.props.centers}/>;
+      return <XYcoord data={this.props.data} centers={this.props.centers} currIteration={this.props.currIteration}/>;
     } else if (selected === "GM") {
-      return <XYcoord data={this.props.data} centers={this.props.centers}/>;
+      return <XYcoord data={this.props.data} centers={this.props.centers} currIteration={this.props.currIteration}/>;
     } else if (selected === "LR") {
-      return <XYcoord data={this.props.data} centers={this.props.centers}/>;
+      return <XYcoord data={this.props.data} centers={this.props.centers} currIteration={this.props.currIteration}/>;
     } else if (selected === "LogR") {
-      return <XYcoord data={this.props.data} centers={this.props.centers}/>;
+      return <XYcoord data={this.props.data} centers={this.props.centers} currIteration={this.props.currIteration}/>;
     } else if (selected === "BN") {
       return <h1> Fill me with BN </h1>;
     } else if (selected === "HM") {
@@ -616,7 +735,6 @@ class XYcoord extends React.Component {
         grids.push(<line key={'hl'+i} className='x-grids' x1='0' y1={y} x2={this.state.W} y2={y} strokeWidth='0.5' stroke='#666666'/>);
         if (i !== 0) {
         grids.push(<text key={'ht'+i} className='tick' x={this.state.cX-3} y={y+5} fill='black' fontSize='10pt' textAnchor='end' fontFamily="math">{this.generateTick(-i)}</text>);
-
         }
       }
       else {
@@ -653,11 +771,12 @@ class XYcoord extends React.Component {
 
   generateCenters(){
     var centers = [];
+    var currCenters = this.props.centers[this.props.currIteration];
     var polyPoints = [[0,-11.264],[-6.6,9.416],[9.9,-3.784],[-9.9,-3.784],[6.6,9.416]];
-    for (var i=0; i<this.props.centers.length; i++) {
+    for (var i=0; i<currCenters.length; i++) {
       var points = "";
-      var x = this.props.centers[i][0];
-      var y = this.props.centers[i][1];
+      var x = currCenters[i][0];
+      var y = currCenters[i][1];
       var currX = x*(this.state.gS*this.state.nS)/(this.state.co*Math.pow(10,this.state.exp))+this.state.cX;
       var currY = this.state.cY-y*(this.state.gS*this.state.nS)/(this.state.co*Math.pow(10,this.state.exp));
       for (var j=0; j<5; j++) {
@@ -680,7 +799,6 @@ class XYcoord extends React.Component {
   var grids = this.generateGrids();
   var data = this.generateData();
   var centers = this.generateCenters();
-
   var coordsys = <svg className='coordsys' onWheel={this.scrollZoom} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseDown={this.mouseDown}>
                   <g id='b'>
                     {grids.concat(centers,data)}
