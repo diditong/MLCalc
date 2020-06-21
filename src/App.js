@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { Nav, Navbar, NavDropdown, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus, faRedo, faPlay, faStepForward, faStepBackward, faFastBackward, faFastForward, faEye, faKey } from '@fortawesome/free-solid-svg-icons'
+import { faCheckSquare, faEdit, faMinus, faPlus, faRedo, faPlay, faStepForward, faStepBackward, faFastBackward, faFastForward, faEye, faKey } from '@fortawesome/free-solid-svg-icons'
 import { findAllByDisplayValue } from '@testing-library/react';
 
 class App extends React.Component {
@@ -213,14 +213,13 @@ class Sidebar extends React.Component {
     } else {
       tools = <h1> I'm Nothing </h1>;
     }
-
     return (
       tools
     );
   }
 }
 
-function KMTools(props) {
+function KMTools (props) {
   return (
     <div id='KMTools'>
         <KMengine data={props.data} centers={props.centers} currIteration={props.currIteration}
@@ -230,7 +229,6 @@ function KMTools(props) {
     </div>
   );
 }
-
 
 class KMengine extends React.Component {
   constructor (props) {
@@ -351,7 +349,8 @@ class Table extends React.Component {
   constructor (props) {
     super(props);
     this.state = {inputX: '', inputY: '', validX: false, validY: false, 
-                  lastInvalid: false, lastValidValue: null, lastFocusId: null};
+                  lastInvalid: false, lastValidValue: null, lastFocusId: null,
+                  status: 'edit'};
     this.editX = this.editX.bind(this);
     this.editY = this.editY.bind(this);
     this.addXY = this.addXY.bind(this);
@@ -434,7 +433,13 @@ class Table extends React.Component {
   }
 
   initializeValidValue (e) {
-    this.setState({lastValidValue: e.target.value});
+    var value = e.target.value;
+    if (this.isNumeric(value)) {
+      this.setState({lastInvalid: false});
+    } else {
+      this.setState({lastInvalid: true});
+    }
+    this.setState({lastValidValue: value});
   }
 
   navigateTable (event) {
@@ -516,54 +521,108 @@ class Table extends React.Component {
 
   render () {
     var tableType = this.props.tableType;
+    var status =  this.state.status;
+    var tableTitle = null;
     var points = null;
     var type = null;
-    if (tableType == "data") {
+    if (tableType == "data") { 
+      tableTitle = "Data Points";
       points = this.props.data;
       type = "p";
     } else if (tableType == "center") {
+      tableTitle = "Cluster Centers";
       points = this.props.centers[this.props.currIteration];
       type = "c";
     }
 
-    var list = [];
-    for (var i=0; i<points.length; i++){
-      list.push(
-        <tr key={'tr'+i}>
+    var statusClass = null;
+    var statusButton = null;
+    var tableBody = [];
+    var tableHead = null;
+    if (status === "edit") {
+      statusClass = "editTable";
+      statusButton = <FontAwesomeIcon className="checkBtn" icon={faCheckSquare} onClick={()=>this.setState({status: "check"})}/>
+      tableHead = 
+        <tr>
+          <th colspan="2" className="table-title">{tableTitle}</th>
+          <th>
+            {statusButton}
+          </th>
+        </tr>
+      tableBody.push(
+        <tr>
           <td>
-            <input id={type+(i+1)+"0"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
-            onChange={e=>this.editX(tableType, e.target.id, e.target.value)} 
-            onKeyDown={this.navigateTable} onFocus={this.initializeValidValue} onBlur={this.correctLastInput}/>
-          </td>
-          <td >
-            <input id={type+(i+1)+"1"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
-            onChange={e=>this.editY(tableType, e.target.id, e.target.value)} 
-            onKeyDown={this.navigateTable} onFocus={this.initializeValidValue} onBlur={this.correctLastInput}/>
+            <input id={type+"00"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
+            onChange={e=>this.editX(tableType, e.target.id, e.target.value)} onKeyDown={this.navigateTable}/>
           </td>
           <td>
-            <FontAwesomeIcon icon={faMinus} id={'d'+i} className="delBtn" onClick={(e)=>this.props.deletePoint(tableType, e.target.id)}/>
+            <input id={type+"01"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
+            onChange={e=>this.editY(tableType, e.target.id, e.target.value)} onKeyDown={this.navigateTable}/>
+          </td>
+          <td>
+            <FontAwesomeIcon icon={faPlus} className="addBtn" onClick={e=>this.addXY(tableType)}/>
           </td>
         </tr>
-      );
-    }
-    return (
-      <div className="table-container" id={tableType+'Table'}>
-        <table className="table">
-          <tbody>
-            <tr>
+      )
+      
+      for (var i=0; i<points.length; i++){
+        tableBody.push(
+          <tr key={'tr'+i}>
+            <td>
+              <input id={type+(i+1)+"0"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
+              onChange={e=>this.editX(tableType, e.target.id, e.target.value)} 
+              onKeyDown={this.navigateTable} onFocus={this.initializeValidValue} onBlur={this.correctLastInput}/>
+            </td>
+            <td>
+              <input id={type+(i+1)+"1"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
+              onChange={e=>this.editY(tableType, e.target.id, e.target.value)} 
+              onKeyDown={this.navigateTable} onFocus={this.initializeValidValue} onBlur={this.correctLastInput}/>
+            </td>
+            <td>
+              <FontAwesomeIcon icon={faMinus} id={'d'+i} className="delBtn" onClick={(e)=>this.props.deletePoint(tableType, e.target.id)}/>
+            </td>
+          </tr>
+        );
+      }
+    } else if (status === "check") {
+        statusClass = "checkTable";
+        statusButton = <FontAwesomeIcon className="editBtn" icon={faEdit} onClick={()=>this.setState({status: "edit"})}/>
+        tableHead = 
+        <tr>
+          <th className="table-title">{tableTitle}</th>
+          <th>
+            {statusButton}
+          </th>
+        </tr>
+        tableBody.push(
+        <tr>
+          <td>X</td>
+          <td>Y</td>
+        </tr>
+        );
+        for (var i=0; i<points.length; i++){
+          tableBody.push(
+            <tr key={'tr'+i} >
               <td>
-                <input id={type+"00"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
-                onChange={e=>this.editX(tableType, e.target.id, e.target.value)} onKeyDown={this.navigateTable}/>
+                {points[i][0]}
               </td>
               <td>
-                <input id={type+"01"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
-                onChange={e=>this.editY(tableType, e.target.id, e.target.value)} onKeyDown={this.navigateTable}/>
-              </td>
-              <td>
-                <FontAwesomeIcon icon={faPlus} className="addBtn" onClick={e=>this.addXY(tableType)}/>
+                {points[i][1]}
               </td>
             </tr>
-            {list}
+          );
+        }
+    }
+
+
+    return (
+      <div className="table-container" id={tableType+'Table'}>        
+        <table className={statusClass}>
+          <thead>
+            {tableHead}
+          </thead>
+          <tbody>
+            {tableBody}
           </tbody>
         </table>
       </div>
@@ -794,7 +853,6 @@ class XYcoord extends React.Component {
   }
 
   generateGrids() {
-    
     var grids = [];
     var xaxis = <line key='xa' id='x-axis' x1='0' y1={this.state.cY} x2={this.state.W} y2={this.state.cY} strokeWidth='1' stroke='black'/>;
     var yaxis = <line key='ya' id='y-axis' x1={this.state.cX} y1='0' x2={this.state.cX} y2={this.state.H} strokeWidth='1' stroke='black'/>;
