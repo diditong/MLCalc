@@ -68,7 +68,7 @@ code {
   height: 50px;
   background: #E8E8E8;
   border-bottom: 1px solid #D3D3D3;  
-  min-width: 320px;
+  min-width: 350px;
 }
 .bar {
   display: table;   /* Allow the centering to work */
@@ -133,8 +133,6 @@ input[type="text"] {
 
 
 
-
-
 /* For Table Layout */
 .table-title {
   font-size: 20px;
@@ -146,7 +144,7 @@ input[type="text"] {
   margin-left: 15px;
   margin-right: 15px;
   margin-bottom: 0px;
-  min-width: 300px;
+  min-width: 320px;
   height: 250px;
   overflow: auto;
 }
@@ -202,8 +200,6 @@ input[type="text"] {
   border-top: none;
 }
 
-
-
 .checkTable > thead > tr > th {
   position: -webkit-sticky;
   position: sticky;
@@ -253,25 +249,20 @@ input[type="text"] {
 }
 
 
+
 .input-group {
   width: 100%;
 }
-.editBtn {
+.tableBtn {
+  margin-left: 10px;
   cursor: pointer;
   color: #808080;
   font-size: 20px;
 }
-.editBtn:hover{
+.tableBtn:hover{
   color: black;
 }
-.checkBtn {
-  cursor: pointer;
-  color: #808080;
-  font-size: 20px;
-}
-.checkBtn:hover {
-  color: black;
-}
+
 .addBtn {
   cursor: pointer;
   color: #808080;
