@@ -9,9 +9,9 @@ function KMTools (props) {
     <div id='KMTools'>
       <KMengine data={props.data} centers={props.centers} results={props.results} 
       updateResults={props.updateResults} setIteration={props.setIteration} currIteration={props.currIteration}/> 
-      <Datatable tableType="data" data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint} clearPoints={props.clearPoints}/>
+      <Datatable tableType="data" data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint} clearPoints={props.clearPoints} dataTableStatus={props.dataTableStatus} />
       <br />
-      <Centertable tableType="center" centers={props.centers} results={props.results} currIteration={props.currIteration} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint} resetEngine={props.resetEngine} clearPoints={props.clearPoints}/>
+      <Centertable tableType="center" centers={props.centers} results={props.results} currIteration={props.currIteration} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint} resetEngine={props.resetEngine} clearPoints={props.clearPoints} centerTableStatus={props.centerTableStatus}/>
     </div>
   );
 }

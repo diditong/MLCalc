@@ -14,7 +14,8 @@ class Sidebar extends React.Component {
               addPoint={this.props.addPoint} deletePoint={this.props.deletePoint} 
               editPoint={this.props.editPoint} updateResults={this.props.updateResults}
               currIteration={this.props.currIteration} setIteration={this.props.setIteration} 
-              resetEngine={this.props.resetEngine} clearPoints={this.props.clearPoints}/>; 
+              resetEngine={this.props.resetEngine} clearPoints={this.props.clearPoints}
+              dataTableStatus={this.props.dataTableStatus} centerTableStatus={this.props.centerTableStatus}/>; 
     } else if (selected === "GM") {
       tools = <h1> I'm GM </h1>;
     } else if (selected === "LR") {

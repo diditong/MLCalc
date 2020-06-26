@@ -9,7 +9,9 @@ class Calc extends React.Component {
                   currIteration: 0,
                   data: [], 
                   centers: [[1,1],[-1,1],[0,0]], 
-                  results: []};
+                  results: [],
+                  dataTableStatus: 'edit',
+                  centerTableStatus: 'edit'};
     this.clearPoints = this.clearPoints.bind(this);
     this.addPoint = this.addPoint.bind(this);
     this.deletePoint = this.deletePoint.bind(this);
@@ -114,11 +116,15 @@ class Calc extends React.Component {
       var centers = this.state.centers;
       var results = this.state.results;
       var currIteration = this.state.currIteration;
+      var dataTableStatus = this.state.dataTableStatus;
+      var centerTableStatus = this.state.centerTableStatus;
+      
       var sidebar = <Sidebar selected={selected} data={data} centers={centers} results={results}
                       addPoint={this.addPoint} deletePoint={this.deletePoint} 
                       editPoint={this.editPoint} updateResults={this.updateResults}
                       currIteration={currIteration} setIteration={this.setIteration} 
                       resetEngine={this.resetEngine} clearPoints={this.clearPoints}
+                      dataTableStatus={dataTableStatus} centerTableStatus={centerTableStatus}
                       />;
       var canvas = <Canvas selected={selected} data={data} centers={centers} results={results} 
                            currIteration={currIteration}/>;

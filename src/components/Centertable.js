@@ -202,7 +202,7 @@ class Centertable extends React.Component {
 
 	render () {
 		var tableType = this.props.tableType;
-		var status =  this.state.status;
+		var status =  this.props.centerTableStatus;
 		var tableTitle = "Cluster Centers";
 		var points = null;
 		if (this.props.currIteration === 0) {

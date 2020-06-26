@@ -1,19 +1,39 @@
-function Switch (props) {
-    const selected = props.selected;
-    if (selected === "KM") {
-      return <KMTools />;
-    } else if (selected === "GM") {
-      return <h1> I'm GM </h1>;
-    } else if (selected === "LR") {
-      return <h1> I'm LR </h1>;
-    } else if (selected === "LogR") {
-      return <h1> I'm LogR </h1>;
-    } else if (selected === "BN") {
-      return <h1> I'm BN </h1>;
-    } else if (selected === "HM") {
-      return <h1> I'm HM </h1>;
-    } else if (selected === "FG") {
-      return <h1> I'm FG </h1>;
-    }
-    return <h1> I'm Nothing </h1>;
+import React from 'react';
+import './App.css';
+import ReactDOM from 'react-dom';
+
+import Navibar from './components/Navibar'
+import Calc from './components/Calc'
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { findAllByDisplayValue } from '@testing-library/react';
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {selected: "KM"};
+    this.selectModule = this.selectModule.bind(this);
   }
+
+  selectModule (mod) {
+    this.setState({selected: mod});
+  }
+
+  render () {
+    var selected = this.state.selected;
+    return (
+      <div id='wrap'>
+        <Navibar selected={selected} selectModule={this.selectModule}/>
+        <Calc selected={selected}/>
+      </div>
+    );
+  }
+}
+
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root'));
+
+export default App;

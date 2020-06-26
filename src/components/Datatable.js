@@ -8,8 +8,8 @@ class Datatable extends React.Component {
   constructor (props) {
     super(props);
     this.state = {inputX: '', inputY: '', validX: false, validY: false, 
-                  lastInvalid: false, lastValidValue: null, lastFocusId: null,
-                  status: 'edit'};
+                  lastInvalid: false, lastValidValue: null, lastFocusId: null
+                 };
     this.editX = this.editX.bind(this);
     this.editY = this.editY.bind(this);
     this.addXY = this.addXY.bind(this);
@@ -176,8 +176,6 @@ class Datatable extends React.Component {
     }
   }
 
-    
-
   uploadData = (files) => {
     this.props.clearPoints();
     var reader = new FileReader();
@@ -195,7 +193,6 @@ class Datatable extends React.Component {
 
   }
 
-
   downloadData () {
     var rawData = this.props.data;
     var csvContent = "data:text/csv;charset=utf-8,";
@@ -209,7 +206,7 @@ class Datatable extends React.Component {
 
   render () {
     var tableType = this.props.tableType;
-    var status =  this.state.status;
+    var status =  this.props.dataTableStatus;
     var tableTitle = "Data Points";
     var points = this.props.data;
     var type = "p";
