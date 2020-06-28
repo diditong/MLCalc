@@ -1,17 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
 
-import KMengine from './KMengine.js'
-import Datatable from './Datatable'
-import Centertable from './Centertable'
 
-function KMTools (props) {
+import {ClusteringContext} from './ClusteringContext.js';
+
+const KMTools = () => {
+  const [data, centers, results, currIteration,] = useContext(ClusteringContext);
+
+
+
   return (
     <div id='KMTools'>
-      <KMengine data={props.data} centers={props.centers} results={props.results} 
-      updateResults={props.updateResults} setIteration={props.setIteration} currIteration={props.currIteration}/> 
-      <Datatable tableType="data" data={props.data} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint} clearPoints={props.clearPoints} dataTableStatus={props.dataTableStatus} />
-      <br />
-      <Centertable tableType="center" centers={props.centers} results={props.results} currIteration={props.currIteration} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint} resetEngine={props.resetEngine} clearPoints={props.clearPoints} centerTableStatus={props.centerTableStatus}/>
+      
     </div>
   );
 }

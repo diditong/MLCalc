@@ -1,41 +1,57 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import KMTools from './KMTools';
+import KMengine from './KMengine';
+import Datatable from './Datatable';
+import Centertable from './Centertable';
+import { AppContext } from "../AppContext";
+import {ClusteringContextProvider} from "./ClusteringContext"
 
-class Sidebar extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {selected: "KM"};
+
+const Sidebar = () => {
+  const {module, setModule} = useContext(AppContext);
+  console.log("From Sidebar: ", module);
+	const sidebarSwitch = (mod) => {
+		switch(mod) {
+			case 'KM':
+				return (
+          <ClusteringContextProvider>
+            <div>
+              <KMengine /> 
+              <Datatable />
+            </div>
+          </ClusteringContextProvider>
+        );
+			case 'GM':
+				//return <GMCalc />;
+			case 'LR':
+				//return <LRCalc />;
+			case 'LogR':
+				//return <LogRCalc />;
+			case 'BN':
+				//return <BNCalc />;
+			case 'HM':
+				//return <HMCalc />;
+			case 'FG':
+				//return <FGCalc />;
+
+		}
   }
-  render () {
-    const selected = this.props.selected;
-    var tools = undefined;
-    if (selected === "KM") {
-      tools = <KMTools data={this.props.data} centers={this.props.centers} results={this.props.results}
-              addPoint={this.props.addPoint} deletePoint={this.props.deletePoint} 
-              editPoint={this.props.editPoint} updateResults={this.props.updateResults}
-              currIteration={this.props.currIteration} setIteration={this.props.setIteration} 
-              resetEngine={this.props.resetEngine} clearPoints={this.props.clearPoints}
-              dataTableStatus={this.props.dataTableStatus} centerTableStatus={this.props.centerTableStatus}/>; 
-    } else if (selected === "GM") {
-      tools = <h1> I'm GM </h1>;
-    } else if (selected === "LR") {
-      tools = <h1> I'm LR </h1>;
-    } else if (selected === "LogR") {
-      tools = <h1> I'm LogR </h1>;
-    } else if (selected === "BN") {
-      tools = <h1> I'm BN </h1>;
-    } else if (selected === "HM") {
-      tools = <h1> I'm HM </h1>;
-    } else if (selected === "FG") {
-      tools = <h1> I'm FG </h1>;
-    } else {
-      tools = <h1> I'm Nothing </h1>;
-    }
-    return (
-      tools
-    );
-  }
+  
+  return (
+    sidebarSwitch(module)
+  )
 }
 
 // Must export!
 export default Sidebar;
+
+/*
+<KMengine data={props.data} centers={props.centers} results={props.results} 
+              updateResults={props.updateResults} setIteration={props.setIteration} currIteration={props.currIteration}/> 
+            <Datatable tableType="data" data={props.data} 
+            addPoint={props.addPoint} deletePoint={props.deletePoint} 
+            editPoint={props.editPoint} clearPoints={props.clearPoints} 
+            dataTableStatus={props.dataTableStatus} />
+            <br />
+            <Centertable tableType="center" centers={props.centers} results={props.results} currIteration={props.currIteration} addPoint={props.addPoint} deletePoint={props.deletePoint} editPoint={props.editPoint} resetEngine={props.resetEngine} clearPoints={props.clearPoints} centerTableStatus={props.centerTableStatus}/>
+*/

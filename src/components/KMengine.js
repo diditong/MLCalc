@@ -2,17 +2,54 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckSquare, faEdit, faMinus, faPlus, faRedo, faPlay, faStepForward, faStepBackward, faFastBackward, faFastForward, faEye, faKey } from '@fortawesome/free-solid-svg-icons'
 
-class KMengine extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {finalResult: false};
-    this.computeNextStep = this.computeNextStep.bind(this);
-    this.computeNextIteration = this.computeNextIteration.bind(this);
-    this.accessPreviousIteration = this.accessPreviousIteration.bind(this);
-    this.computeFinalResult = this.computeFinalResult.bind(this);
-    this.sameCenters = this.sameCenters.bind(this);
-  }
+const KMengine = () => {
+  return (
+    <div className="outer-menu">
+      <div className="bar">
+        <ul>
+          <li data-title="Start Over"> 
+            <FontAwesomeIcon icon={faRedo} />
+          </li>
+          <li data-title="Autoplay"> 
+            <FontAwesomeIcon icon={faPlay} />
+          </li>
+          <li data-title="Prev. Step">
+            <FontAwesomeIcon icon={faStepBackward} />
+          </li>
+          <li data-title="Next Step"> 
+            <FontAwesomeIcon icon={faStepForward} />
+          </li>
+          <li data-title="Prev. Iter.">
+            <FontAwesomeIcon icon={faFastBackward} />
+          </li>
+          <li data-title="Next Iter.">
+            <FontAwesomeIcon icon={faFastForward} />
+          </li>
+          <li data-title="Final Result">
+            <FontAwesomeIcon icon={faKey} />
+          </li>
+          <li data-title="View">
+              <FontAwesomeIcon icon={faEye} />
+              <ul>
+                  <li data-title="Hide Shadows">
+                    <FontAwesomeIcon icon={faEye} />
+                  </li>
+                  <li data-title="Hide Lines">
+                    <FontAwesomeIcon icon={faEye} />
+                  </li>
+              </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+}
 
+
+// Must export!
+export default KMengine;
+
+/*
   computeFinalResult () {
     console.log("!finalResult: ", !this.state.finalResult);
     while (!this.state.finalResult) {
@@ -127,50 +164,4 @@ class KMengine extends React.Component {
     console.log("!finalResult: ", !this.state.finalResult);
     return this.state.finalResult;
   }
-
-  render () {
-    return (
-      <div className="outer-menu">
-        <div className="bar">
-          <ul>
-            <li data-title="Start Over"> 
-              <FontAwesomeIcon icon={faRedo} />
-            </li>
-            <li data-title="Autoplay"> 
-              <FontAwesomeIcon icon={faPlay} />
-            </li>
-            <li data-title="Prev. Step">
-              <FontAwesomeIcon icon={faStepBackward} />
-            </li>
-            <li data-title="Next Step"> 
-              <FontAwesomeIcon icon={faStepForward} />
-            </li>
-            <li data-title="Prev. Iter." onClick={this.accessPreviousIteration}>
-              <FontAwesomeIcon icon={faFastBackward} />
-            </li>
-            <li data-title="Next Iter." onClick={this.computeNextIteration}>
-              <FontAwesomeIcon icon={faFastForward}/>
-            </li>
-            <li data-title="Final Result">
-              <FontAwesomeIcon icon={faKey} onClick={this.computeFinalResult}/>
-            </li>
-            <li data-title="View">
-                <FontAwesomeIcon icon={faEye} />
-                <ul>
-                    <li data-title="Hide Shadows">
-                      <FontAwesomeIcon icon={faEye} />
-                    </li>
-                    <li data-title="Hide Lines">
-                      <FontAwesomeIcon icon={faEye} />
-                    </li>
-                </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    );
-  }
-}
-
-// Must export!
-export default KMengine;
+*/

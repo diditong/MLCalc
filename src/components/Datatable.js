@@ -1,135 +1,48 @@
-import React from 'react';
+import React, {useState, useContext} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare, faUpload, faDownload, faEdit, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import FileSaver from 'file-saver';
 import ReactFileReader from 'react-file-reader';
+import {ClusteringContext} from "./ClusteringContext"
 
-class Datatable extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {inputX: '', inputY: '', validX: false, validY: false, 
-                  lastInvalid: false, lastValidValue: null, lastFocusId: null
-                 };
-    this.editX = this.editX.bind(this);
-    this.editY = this.editY.bind(this);
-    this.addXY = this.addXY.bind(this);
-    this.isNumeric = this.isNumeric.bind(this);
-    this.navigateTable = this.navigateTable.bind(this);
-    this.correctLastInput = this.correctLastInput.bind(this);
-    this.initializeValidValue = this.initializeValidValue.bind(this);
-    this.downloadData = this.downloadData.bind(this);
-    this.uploadData = this.uploadData.bind(this);
-  }
+const Datatable = () => {
 
-  isNumeric (value) {
-    return !isNaN(value);
-  }
+  const {data, dataTableStatus, setDataTableStatus, editPoint, deletePoint} 
+  = useContext(ClusteringContext);
+  const [lastFocusId, setLastFocusId] = useState(null);
+  const [lastInvalid, setLastInvalid] = useState(null);
+  const [lastValidValue, setLastValidValue] = useState(null);
+  const [inputX, setInputX] = useState(null);
+  const [inputY, setInputY] = useState(null);
+  const [validX, setValidX] = useState(null);
+  const [validY, setValidY] = useState(null);
 
-  editX (type, id, value) {
-    this.setState({lastFocusId: id});
-    var rowId = id.slice(1, id.length-1);
-    if (rowId === '0') {
-      if (this.isNumeric(value)) {
-        this.setState({lastInvalid: false});
-        this.setState({lastValidValue: value});
-        this.setState({inputX: value, validX: true});
-      } else {
-        this.setState ({validX: false});
-      }
-    } else if (value.length == 0) {
-        this.setState({lastInvalid: true});
-        this.setState({lastValidValue: '0'});
-        this.props.editPoint(type, id, value);
-    } else if (this.isNumeric(value)) {
-        this.setState({lastInvalid: false});
-        this.setState({lastValidValue: value});
-        this.props.editPoint(type, id, value);
-    } else {
-        this.setState({lastInvalid: true});
-        this.props.editPoint(type, id, value);
-    }
-  }
-
-  editY (type, id, value) {
-    this.setState({lastFocusId: id});
-    var rowId = id.slice(1, id.length-1);
-    if (rowId === '0') {
-      if (this.isNumeric(value)) {
-        this.setState({lastInvalid: false});
-        this.setState({lastValidValue: value});
-        this.setState({inputY: value, validY: true});
-      } else {
-        this.setState ({validY: false});
-      }
-    } else if (value.length == 0) {
-
-        this.setState({lastInvalid: true});
-        this.setState({lastValidValue: '0'});
-        this.props.editPoint(type, id, value);
-    } else if (this.isNumeric(value)) {
-        this.setState({lastInvalid: false});
-        this.setState({lastValidValue: value});
-        this.props.editPoint(type, id, value);
-    } else {
-        this.setState({lastInvalid: true});
-        this.props.editPoint(type, id, value);
-    }
-    //e=>this.props.editPoint(tableType, e.target.id, e.target.value)
-  }
-
-  addXY (type) {
-    if (this.state.validX && this.state.validY) {
-      this.props.addPoint(type, this.state.inputX, this.state.inputY);
-    }
-  }
-
-  correctLastInput () {
-    if (this.state.lastInvalid) {
-      this.props.editPoint(this.props.tableType, this.state.lastFocusId, this.state.lastValidValue);
-    }
-  }
-
-  initializeValidValue (e) {
-    var value = e.target.value;
-    if (this.isNumeric(value)) {
-      this.setState({lastInvalid: false});
-    } else {
-      this.setState({lastInvalid: true});
-    }
-    this.setState({lastValidValue: value});
-  }
-
-  navigateTable (event) {
-    var arrow = {
+  const navigateTable = (event) => {
+    const arrow = {
       left: 37,
       up: 38,
       right: 39,
       down: 40
     };
-
-    var input = event.target;
-
-    var id = event.target.id;
-    var typeId = id[0];
-    var rowId = id.slice(1, id.length-1);
-    var colId = id[id.length-1];
-    var key = event.keyCode;
-    var newId = id;
-    var start = null;
-    var end = null;
-    var newInput = null;
-    var inputLength = null;
-    if (this.props.tableType==='data') {
-      inputLength = (this.props.data.length).toString();
-    } else if (this.props.tableType==='center') {
-      inputLength = (this.props.centers.length).toString();
-    }
+  
+    let input = event.target;
+  
+    let id = event.target.id;
+    let typeId = id[0];
+    let rowId = id.slice(1, id.length-1);
+    let colId = id[id.length-1];
+    let key = event.keyCode;
+    let newId = id;
+    let start = null;
+    let end = null;
+    let newInput = null;
+    let inputLength = (data.length).toString();
 
     switch (key) {
       case arrow.left:
         { 
-          if ((colId==='1') && (input.selectionStart==0)) { 
-            newId = typeId + rowId + '0';
+          if ((colId==='y') && (input.selectionStart==0)) { 
+            newId = typeId + rowId + 'x';
             newInput = document.getElementById(newId);
             start = newInput.value.length;
             end = newInput.value.length;
@@ -138,8 +51,8 @@ class Datatable extends React.Component {
         }
       case arrow.right:
         {
-          if ((colId === '0') && (input.selectionEnd==input.value.length)) {
-            newId = typeId + rowId + '1';
+          if ((colId === 'x') && (input.selectionEnd==input.value.length)) {
+            newId = typeId + rowId + 'y';
             newInput = document.getElementById(newId);
             start = 0;
             end = 0;
@@ -167,7 +80,7 @@ class Datatable extends React.Component {
           break;
         }
     }
-
+  
     if (newId !== id) {
       event.preventDefault();
       newInput.focus();
@@ -175,9 +88,77 @@ class Datatable extends React.Component {
       newInput.selectionEnd = end;
     }
   }
+  const isNumeric = (value) => {
+    return !isNaN(value);
+  }
 
-  uploadData = (files) => {
-    this.props.clearPoints();
+  const initializeValidValue = (e) => {
+    var value = e.target.value;
+    if (isNumeric(value)) {
+      setLastInvalid(false);
+    } else {
+      setLastInvalid(true);
+    }
+    setLastValidValue(value);
+  }
+
+  const correctLastInput = () => {
+    if (lastInvalid) {
+      editPoint(lastFocusId, lastValidValue);
+    }
+  }
+
+  const editInput = (id, value) => {
+    setLastFocusId(id);
+    let rowId = id.slice(1, id.length-1);
+    let xyId = id[id.length-1];
+    if (rowId === '0') {
+      if (isNumeric(value)) {
+        setLastInvalid(false);
+        setLastValidValue(value);
+        if (xyId === 'x') {
+          setInputX(value);
+          setValidX(true);
+        } else if (xyId === 'y') {
+          setInputY(value);
+          setValidY(true);
+        } 
+      } else {
+        (xyId === 'x') ? setValidX(false) : setValidY(false);
+      }
+    } else if (value.length == 0) {
+        setLastInvalid(false);
+        setLastValidValue(0);
+        editPoint(id, value);
+    } else if (isNumeric(value)) {
+        setLastInvalid(false);
+        setLastValidValue(value);
+        editPoint(id, value);
+    } else {
+        setLastInvalid(true);
+        editPoint(id, value);
+    }
+  }
+
+  const addInput = (type) => {
+    if (validX && validY) {
+      //addPoint(inputX, inputY);
+    }
+  }
+
+  const downloadData = () => {
+    var rawData = data;
+    var csvContent = "data:text/csv;charset=utf-8,";
+  
+    rawData.forEach(function(pointArray) {
+        var point = pointArray.join(",");
+        csvContent += point + "\r\n";
+    });
+    FileSaver.saveAs(csvContent, 'data.csv');
+  }
+
+  const uploadData = (files) => {
+    //clearPoints();
     var reader = new FileReader();
     var data = [];
     reader.onload = function () {
@@ -189,131 +170,130 @@ class Datatable extends React.Component {
       }
     };
     reader.readAsText(files[0]);
-
-
   }
 
-  downloadData () {
-    var rawData = this.props.data;
-    var csvContent = "data:text/csv;charset=utf-8,";
 
-    rawData.forEach(function(pointArray) {
-        var point = pointArray.join(",");
-        csvContent += point + "\r\n";
-    });
-    FileSaver.saveAs(csvContent, 'data.csv');
-  }
+  const status = dataTableStatus;
+  const tableTitle = "Data Points";
+  const points = data;
 
-  render () {
-    var tableType = this.props.tableType;
-    var status =  this.props.dataTableStatus;
-    var tableTitle = "Data Points";
-    var points = this.props.data;
-    var type = "p";
-
-    var statusClass = null;
-    var tableButtons = [];
-    var tableBody = [];
-    var tableHead = null;
-    if (status === "edit") {
-      statusClass = "editTable";
-      
-			tableButtons.push(
-        <ReactFileReader handleFiles={this.uploadData} fileTypes={'.csv'}>
-          <FontAwesomeIcon className="tableBtn" icon={faUpload} />
-        </ReactFileReader>
-      );
-      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faCheckSquare} onClick={()=>this.setState({status: "check"})}/>);
-      tableHead = 
-        <tr>
-          <th colspan="1" className="table-title">
-            {tableTitle}
-          </th>
-          <th colspan="2" className="special">
-            {tableButtons}
-          </th>
-        </tr>
+  let statusClass = null;
+  let tableButtons = [];
+  let tableBody = [];
+  let tableHead = null;
+  if (status === "edit") {
+    statusClass = "editTable";
+    
+    tableButtons.push(
+      <ReactFileReader handleFiles={uploadData} fileTypes={'.csv'}>
+        <FontAwesomeIcon className="tableBtn" icon={faUpload} />
+      </ReactFileReader>
+    );
+    tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faCheckSquare} onClick={()=>setDataTableStatus('check')}/>);
+    tableHead = 
+      <tr>
+        <th colspan="1" className="table-title">
+          {tableTitle}
+        </th>
+        <th colspan="2" className="special">
+          {tableButtons}
+        </th>
+      </tr>
+    tableBody.push(
+      <tr>
+        <td>
+          <input id={'d'+"0x"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
+          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
+        </td>
+        <td>
+          <input id={'d'+"0y"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
+          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
+        </td>
+        <td>
+          <FontAwesomeIcon icon={faPlus} className="addBtn" onClick={addInput}/>
+        </td>
+      </tr>
+    )
+    
+    for (var i=0; i<points.length; i++){
       tableBody.push(
-        <tr>
+        <tr key={'tr'+i}>
           <td>
-            <input id={type+"00"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
-            onChange={e=>this.editX(tableType, e.target.id, e.target.value)} onKeyDown={this.navigateTable}/>
+            <input id={'d'+(i+1)+"x"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
+            onChange={e=>editInput(e.target.id, e.target.value)} 
+            onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
-            <input id={type+"01"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
-            onChange={e=>this.editY(tableType, e.target.id, e.target.value)} onKeyDown={this.navigateTable}/>
+            <input id={'d'+(i+1)+"y"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
+            onChange={e=>editInput(e.target.id, e.target.value)} 
+            onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
-            <FontAwesomeIcon icon={faPlus} className="addBtn" onClick={e=>this.addXY(tableType)}/>
+            <FontAwesomeIcon icon={faMinus} id={'del'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
           </td>
         </tr>
-      )
-      
+      );
+    }
+  } else if (status === "check") {
+      statusClass = "checkTable";
+      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faDownload} onClick={downloadData}/>);
+      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('edit')}/>)
+      tableHead = 
+      <tr>
+        <th className="table-title">{tableTitle}</th>
+        <th>
+          {tableButtons}
+        </th>
+      </tr>
+      tableBody.push(
+      <tr>
+        <td>X</td>
+        <td>Y</td>
+      </tr>
+      );
       for (var i=0; i<points.length; i++){
         tableBody.push(
-          <tr key={'tr'+i}>
+          <tr key={'tr'+i} >
             <td>
-              <input id={type+(i+1)+"0"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
-              onChange={e=>this.editX(tableType, e.target.id, e.target.value)} 
-              onKeyDown={this.navigateTable} onFocus={this.initializeValidValue} onBlur={this.correctLastInput}/>
+              {points[i][0].toFixed(10)}
             </td>
             <td>
-              <input id={type+(i+1)+"1"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
-              onChange={e=>this.editY(tableType, e.target.id, e.target.value)} 
-              onKeyDown={this.navigateTable} onFocus={this.initializeValidValue} onBlur={this.correctLastInput}/>
-            </td>
-            <td>
-              <FontAwesomeIcon icon={faMinus} id={'d'+i} className="delBtn" onClick={(e)=>this.props.deletePoint(tableType, e.target.id)}/>
+              {points[i][1].toFixed(10)}
             </td>
           </tr>
         );
       }
-    } else if (status === "check") {
-        statusClass = "checkTable";
-        tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faDownload} onClick={this.downloadData}/>);
-        tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faEdit} onClick={()=>this.setState({status: "edit"})}/>)
-        tableHead = 
-        <tr>
-          <th className="table-title">{tableTitle}</th>
-          <th>
-            {tableButtons}
-          </th>
-        </tr>
-        tableBody.push(
-        <tr>
-          <td>X</td>
-          <td>Y</td>
-        </tr>
-        );
-        for (var i=0; i<points.length; i++){
-          tableBody.push(
-            <tr key={'tr'+i} >
-              <td>
-                {points[i][0].toFixed(10)}
-              </td>
-              <td>
-                {points[i][1].toFixed(10)}
-              </td>
-            </tr>
-          );
-        }
-    }
-
-
-    return (
-      <div className="table-container" id={tableType+'Table'}>        
-        <table className={statusClass}>
-          <thead>
-            {tableHead}
-          </thead>
-          <tbody>
-            {tableBody}
-          </tbody>
-        </table>
-      </div>
-    );
   }
+
+  return (
+    <div className="table-container" id={'dataTable'}>        
+      <table className={statusClass}>
+        <thead>
+          {tableHead}
+        </thead>
+        <tbody>
+          {tableBody}
+        </tbody>
+      </table>
+    </div>
+  );
 }
+
+/*
+    editX = editX.bind(this);
+    editY = editY.bind(this);
+    addXY = addXY.bind(this);
+    isNumeric = isNumeric.bind(this);
+    navigateTable = navigateTable.bind(this);
+    correctLastInput = correctLastInput.bind(this);
+    initializeValidValue = initializeValidValue.bind(this);
+    downloadData = downloadData.bind(this);
+    uploadData = uploadData.bind(this);
+    state = {inputX: '', inputY: '', validX: false, validY: false, 
+              lastInvalid: false, lastValidValue: null, lastFocusId: null
+              };
+*/
+
 
 // Must export!
 export default Datatable;

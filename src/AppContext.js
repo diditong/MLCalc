@@ -4,11 +4,15 @@ export const AppContext = React.createContext();
 export const AppContextProvider = props => {
   const [module, setModule] = useState('KM');
   const [language, setLanguage] = useState('en');
-  //const [currIteration, setCurrIteration] = useState(0);
+  const [calcHeight, setCalcHeight] = useState(window.innerHeight-56);
 
+  const value = {module, setModule, 
+                language, setLanguage, 
+                calcHeight, setCalcHeight};
+  
   return (
     <AppContext.Provider 
-      value={[module, setModule, language, setLanguage]}>
+      value={value}>
       {props.children}
     </ AppContext.Provider>
   );

@@ -1,49 +1,52 @@
-import React from 'react';
-import Sidebar from './Sidebar.js';
-import Canvas from './Canvas.js';
+import React, {useContext} from 'react';
 
-class KMCalc extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {SVGHeight: window.innerHeight-56, 
-                  currIteration: 0,
-                  data: [], 
-                  centers: [[1,1],[-1,1],[0,0]], 
-                  results: [],
-                  dataTableStatus: 'edit',
-                  centerTableStatus: 'edit'};
-    this.clearPoints = this.clearPoints.bind(this);
-    this.addPoint = this.addPoint.bind(this);
-    this.deletePoint = this.deletePoint.bind(this);
-    this.editPoint = this.editPoint.bind(this);
-    this.setIteration = this.setIteration.bind(this);
-    this.updateResults = this.updateResults.bind(this);
-    this.updateHeight = this.updateHeight.bind(this);
-    this.resetEngine = this.resetEngine.bind(this);
-    //this.createRandomData = this.createRandomData.bind(this);
+
+const KMCalc = () => {
+
+  var randomData = [];
+  var r = null;
+  var t = null;
+  for (var i=0; i<60; i++) {
+    r = Math.random()*5;
+    t = Math.random()*360;
+    randomData.push([r*Math.cos(t)+4, r*Math.sin(t)+4]);
   }
-  
-  componentWillMount () {
-    var randomData = [];
-    var r = null;
-    var t = null;
-    for (var i=0; i<60; i++) {
-      r = Math.random()*5;
-      t = Math.random()*360;
-      randomData.push([r*Math.cos(t)+4, r*Math.sin(t)+4]);
-    }
-    for (var i=0; i<50; i++) {
-      r = Math.random()*5;
-      t = Math.random()*360;
-      randomData.push([r*Math.cos(t)-4, r*Math.sin(t)+4]);
-    }
-    for (var i=0; i<50; i++) {
-      r = Math.random()*5;
-      t = Math.random()*360;
-      randomData.push([r*Math.cos(t), r*Math.sin(t)-4]);
-    }
-    this.setState({data: randomData});
+  for (var i=0; i<50; i++) {
+    r = Math.random()*5;
+    t = Math.random()*360;
+    randomData.push([r*Math.cos(t)-4, r*Math.sin(t)+4]);
   }
+  for (var i=0; i<50; i++) {
+    r = Math.random()*5;
+    t = Math.random()*360;
+    randomData.push([r*Math.cos(t), r*Math.sin(t)-4]);
+  }
+
+
+
+  //
+
+
+
+  return (
+
+  );
+}
+
+// Must export!
+export default KMCalc;
+
+/*
+
+  this.clearPoints = this.clearPoints.bind(this);
+  this.addPoint = this.addPoint.bind(this);
+  this.deletePoint = this.deletePoint.bind(this);
+  this.editPoint = this.editPoint.bind(this);
+  this.setIteration = this.setIteration.bind(this);
+  this.updateResults = this.updateResults.bind(this);
+  this.updateHeight = this.updateHeight.bind(this);
+  this.resetEngine = this.resetEngine.bind(this);
+  //this.createRandomData = this.createRandomData.bind(this);
 
   clearPoints () {
     this.setState({data: []});
@@ -108,58 +111,4 @@ class KMCalc extends React.Component {
     this.setState({results: [], currIteration: 0});
   }
 
-  render () {
-    var selected = "KM";
-    var data = this.state.data;
-    var centers = this.state.centers;
-    var results = this.state.results;
-    var currIteration = this.state.currIteration;
-    var dataTableStatus = this.state.dataTableStatus;
-    var centerTableStatus = this.state.centerTableStatus;
-    
-    var sidebar = <Sidebar selected={selected} data={data} centers={centers} results={results}
-                    addPoint={this.addPoint} deletePoint={this.deletePoint} 
-                    editPoint={this.editPoint} updateResults={this.updateResults}
-                    currIteration={currIteration} setIteration={this.setIteration} 
-                    resetEngine={this.resetEngine} clearPoints={this.clearPoints}
-                    dataTableStatus={dataTableStatus} centerTableStatus={centerTableStatus}
-                    />;
-    var canvas = <Canvas selected={selected} data={data} centers={centers} results={results} 
-                          currIteration={currIteration}/>;
-
-    var columnStyle = {
-      float: 'left',
-      padding: '0px',
-      height: '100%',
-      flex: '1'
-    }
-    
-    var leftStyle = {
-      width: '25%',
-      overflow: 'auto',
-      boxShadow: '-6px 0 5px 5px #333',
-      height: this.state.SVGHeight
-    }
-
-    var rightStyle = {
-      width: '75%',
-      height: this.state.SVGHeight
-    }
-
-    window.addEventListener('resize', this.updateHeight);
-
-    return (
-      <div id='calc'>
-        <div id='leftColumn' style={Object.assign({}, columnStyle, leftStyle)}>
-          {sidebar}
-        </div>
-        <div id='rightColumn' style={Object.assign({}, columnStyle, rightStyle)}>
-          {canvas}
-        </div>
-      </div>
-    );
-  }
-}
-
-// Must export!
-export default KMCalc;
+*/

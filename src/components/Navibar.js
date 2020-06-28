@@ -5,7 +5,7 @@ import { AppContext } from "../AppContext";
 import { faLanguage } from '@fortawesome/free-solid-svg-icons';
 
 const Navibar = () => {
-  const [module, setModule, language, setLanguage] = useContext(AppContext);
+  const {module, setModule, language, setLanguage} = useContext(AppContext);
   console.log("Language: ", language);
   return (
     <Navbar className="navi" collapseOnSelect expand="lg" bg="dark" variant="dark">
