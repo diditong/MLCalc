@@ -5,58 +5,64 @@ const initialState = {
   results: [],
   centers: [[1,1],[-1,1],[0,0]],
   dataTableStatus: 'edit',
-  centerTableStatus: 'edit',
-  currIteration: 0,
+  currIteration: 0
 };
 
 const reducer = (state, action) => {
+  let id = null;
+  let type = null;
+  let actionType = action.type;
   switch (action.type) {
-    case "ADD_POINT":
-
-    case "SET_DATATABLESTATUS":
+    case ("SET_DATATABLESTATUS"):
       return {...state, dataTableStatus: action.payload};
-    case "DEL_POINT":
-      console.log("Reached delete point");
-      let id = action.payload;
-      let type = id[0];
-      console.log("From del point: ", id, type);
-      if (type === "d") {
-        var newData = [];
+    case ("DEL_POINT"):
+      id = action.payload.id;
+      type = id[0];
+      if (type === 'd') {
+        let newData = [];
         for (var i=0; i<state.data.length; i++) {
-          if (("del"+i) !== id) {
+          if (("dr"+i) !== id) {
             newData.push(state.data[i]);
           }
         }
         return {...state, data: newData};
-      } else if (type === "c") {
-        var newCenters = [];
-        for (var i=0; i<state.centers.length; i++) {
-          if (("del"+i) !== id) {
-            newCenters.push(state.centers[i]);
+      } else if (type === 'c') {
+          let newCenters = [];
+          for (var i=0; i<state.centers.length; i++) {
+            if (("dr"+i) !== id) {
+              newCenters.push(state.centers[i]);
+            }
           }
-        }
-        return {...state, centers: newCenters};
+          return {...state, centers: newCenters};
+      } else {
+          return {...state};
+      }
+    case("ADD_POINT"):
+      console.log("reached add point"); 
+      id = action.payload.id;
+      var inputX = action.payload.inputX;
+      var inputY = action.payload.inputY;
+      let oldData = [...state.data];
+      console.log("reached after olddata: ", id, inputX, inputY);
+      if (id === 'da') {
+        console.log("reached check type");
+        return {...state, data: [[inputX, inputY]].concat(oldData)};
+      } else if (id === 'ca') {
+        return {...state, centers: [[inputX, inputY]].concat(state.centers)};
+      } else {
+        return {...state};
       }
     /*
-    case "EDIT_POINT":
-      let id = action.payload[0];
-      let val = action.payload[1];
-      let idx = id.slice(1,-1)-1;
-      let type = id[0];
-      let coord = (id[id.length-1]==='x') ? 0 : 1;
-      console.log("From editPoint: ", idx, type, coord);
-      if (type === "d") {
-        let newData = [...state.data];
-        newData[idx][coord] = val;
-        return {...state, data: newData};
-      } else if (type === "c") {
-        let newCenters = [...state.centers];
-        newCenters[idx][coord] = val;
-        return {...state, centers: newCenters};
-      }
-      */
-  }
-};
+    case ("CLEAR_POINTS"):
+      
+    case "UPDATE_RESULTS":
+      var newCenters = centers;
+      this.setState({results: this.state.results.concat([newCenters])});
+    case "RESET_ENGINE":
+      this.setState({results: [], currIteration: 0});
+    */
+    }
+  };
 
 export const ClusteringContext = React.createContext();
 export const ClusteringContextProvider = props => {
@@ -64,11 +70,12 @@ export const ClusteringContextProvider = props => {
 
   const value = {
     data: state.data,
-    editPoint: (id, value) => {
-      dispatch({type: 'EDIT_POINT', payload: [id, value]})
+    addPoint: (id, inputX, inputY) => {
+      dispatch({type: 'ADD_POINT', payload: {id:id, inputX:inputX, inputY:inputY}})
     },
+    editPoint: () => {},
     deletePoint: id => {
-      dispatch({type: 'DEL_POINT', payload: id})
+      dispatch({type: 'DEL_POINT', payload: {id:id}})
     },
     results: state.results,
     centers: state.centers,
@@ -78,9 +85,7 @@ export const ClusteringContextProvider = props => {
       dispatch({type: 'SET_DATATABLESTATUS', payload: value})
     },
 
-    centerTableStatus: state.centerTableStatus,
-    currIteration: state.currIteration,
-    setCenterTableStatus: ()=>{},
+    currIteration: state.currIteration
   }
 
   //console.log("From Clustering Context, ", state.data);
@@ -95,17 +100,11 @@ export const ClusteringContextProvider = props => {
 /*
 
 
-case "CLEAR_POINT":
-  return {
-    data: []
-  };
-case "UPDATE_RESULTS":
-  var newCenters = centers;
-  this.setState({results: this.state.results.concat([newCenters])});
-case "UPDATE_HEIGHT":
-  this.setState({SVGHeight: window.innerHeight-56});
-case "RESET_ENGINE":
-  this.setState({results: [], currIteration: 0});
-}
+
+
+
+
+
+
 
 */

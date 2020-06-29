@@ -7,7 +7,7 @@ import {ClusteringContext} from "./ClusteringContext"
 
 const Datatable = () => {
 
-  const {data, dataTableStatus, setDataTableStatus, editPoint, deletePoint} 
+  const {data, dataTableStatus, setDataTableStatus, addPoint, editPoint, deletePoint} 
   = useContext(ClusteringContext);
   const [lastFocusId, setLastFocusId] = useState(null);
   const [lastInvalid, setLastInvalid] = useState(null);
@@ -88,6 +88,7 @@ const Datatable = () => {
       newInput.selectionEnd = end;
     }
   }
+
   const isNumeric = (value) => {
     return !isNaN(value);
   }
@@ -140,9 +141,10 @@ const Datatable = () => {
     }
   }
 
-  const addInput = (type) => {
+  const addInput = (id) => {
+    console.log("From addinput: ", id);
     if (validX && validY) {
-      //addPoint(inputX, inputY);
+      addPoint(id, inputX, inputY);
     }
   }
 
@@ -210,7 +212,7 @@ const Datatable = () => {
           onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
         </td>
         <td>
-          <FontAwesomeIcon icon={faPlus} className="addBtn" onClick={addInput}/>
+          <FontAwesomeIcon id={'da'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
         </td>
       </tr>
     )
@@ -229,7 +231,7 @@ const Datatable = () => {
             onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
-            <FontAwesomeIcon icon={faMinus} id={'del'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
+            <FontAwesomeIcon icon={faMinus} id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
           </td>
         </tr>
       );

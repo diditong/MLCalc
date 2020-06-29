@@ -18,14 +18,16 @@ function Calc () {
   const leftStyle = {
     width: '25%',
     overflow: 'auto',
-		boxShadow: '-6px 0 5px 5px #333',
-		height: calcHeight
+	boxShadow: '-6px 0 5px 5px #333',
+	height: calcHeight
   }
 
   const rightStyle = {
-		width: '75%',
-		height: calcHeight
-	}
+	width: '75%',
+	height: calcHeight
+  }
+
+  console.log("calcHeight is ", calcHeight);
 
   return (
 		<ClusteringContextProvider>
