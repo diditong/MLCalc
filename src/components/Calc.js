@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import Sidebar from './Sidebar.js';
 import Canvas from './Canvas.js';
 import { AppContext } from "../AppContext";
@@ -6,28 +6,31 @@ import { ClusteringContextProvider } from "./ClusteringContext"
 
 function Calc () {
 	const {calcHeight, setCalcHeight} = useContext(AppContext);
-	window.addEventListener('resize', setCalcHeight(window.innerHeight-56));
 
 	const columnStyle = {
     float: 'left',
     padding: '0px',
     height: '100%',
-    flex: '1'
+		flex: '1',
+		height: calcHeight
   }
   
   const leftStyle = {
     width: '25%',
     overflow: 'auto',
-	boxShadow: '-6px 0 5px 5px #333',
-	height: calcHeight
+		boxShadow: '-6px -5px 5px 5px #333',
   }
 
   const rightStyle = {
-	width: '75%',
-	height: calcHeight
-  }
-
-  console.log("calcHeight is ", calcHeight);
+		width: '75%',
+	}
+	
+	useEffect(() => {
+    function handleResize () {
+      setCalcHeight(window.innerHeight-57);
+    };
+    window.addEventListener('resize', handleResize);
+  });
 
   return (
 		<ClusteringContextProvider>

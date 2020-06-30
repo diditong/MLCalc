@@ -5,10 +5,9 @@ import FileSaver from 'file-saver';
 import ReactFileReader from 'react-file-reader';
 import {ClusteringContext} from "./ClusteringContext"
 
-const Datatable = () => {
-
-  const {data, dataTableStatus, setDataTableStatus, addPoint, editPoint, deletePoint} 
-  = useContext(ClusteringContext);
+const Centerstable = () => {
+  const {centers, centersTableStatus, setCentersTableStatus, addPoint, editPoint, deletePoint} 
+    = useContext(ClusteringContext);
   const [lastFocusId, setLastFocusId] = useState(null);
   const [lastInvalid, setLastInvalid] = useState(null);
   const [lastValidValue, setLastValidValue] = useState(null);
@@ -36,7 +35,7 @@ const Datatable = () => {
     let start = null;
     let end = null;
     let newInput = null;
-    let inputLength = (data.length).toString();
+    let inputLength = (centers.length).toString();
 
     switch (key) {
       case arrow.left:
@@ -148,52 +147,51 @@ const Datatable = () => {
     }
   }
 
-  const downloadData = () => {
-    var rawData = data;
-    var csvContent = "data:text/csv;charset=utf-8,";
+  const downloadCenters = () => {
+    var rawCenters = centers;
+    var csvContent = "centers:text/csv;charset=utf-8,";
   
-    rawData.forEach(function(pointArray) {
+    rawCenters.forEach(function(pointArray) {
         var point = pointArray.join(",");
         csvContent += point + "\r\n";
     });
-    FileSaver.saveAs(csvContent, 'data.csv');
+    FileSaver.saveAs(csvContent, 'centers.csv');
   }
 
-  const uploadData = (files) => {
+  const uploadCenters = (files) => {
     //clearPoints();
     var reader = new FileReader();
-    var data = [];
+    var centers = [];
     reader.onload = function () {
       var lines = reader.result.split("\n");
       var pair = null;
       for (var i=0; i<lines.length; i++) {
         pair = lines[i].split(",");
-        data.push([parseFloat(pair[0]),parseFloat(pair[1])]);
+        centers.push([parseFloat(pair[0]),parseFloat(pair[1])]);
       }
     };
     reader.readAsText(files[0]);
   }
 
-  const status = dataTableStatus;
-  const tableTitle = "Data Points";
-  const points = data;
+  const tableTitle = "Centers Points";
+  const points = centers;
 
   let statusClass = null;
   let tableButtons = [];
   let tableBody = [];
   let tableHead = null;
-  if (status === "edit") {
+
+  if (centersTableStatus === "edit") {
     statusClass = "editTable";
     
     tableButtons.push(
       <div className="tableToolbar">
-        <ReactFileReader handleFiles={uploadData} fileTypes={'.csv'}>
+        <ReactFileReader handleFiles={uploadCenters} fileTypes={'.csv'}>
           <FontAwesomeIcon className="tableBtn" icon={faUpload} />
         </ReactFileReader>
-        <FontAwesomeIcon className="tableBtn" icon={faCheckSquare} onClick={()=>setDataTableStatus('check')}/>
+        <FontAwesomeIcon className="tableBtn" icon={faCheckSquare} onClick={()=>setCentersTableStatus('check')}/>
       </div>
     );
-
     tableHead = 
       <tr>
         <th colSpan="1" className="table-title">
@@ -206,15 +204,15 @@ const Datatable = () => {
     tableBody.push(
       <tr>
         <td>
-          <input id={'d'+"0x"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
+          <input id={'c'+"0x"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
           onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
         </td>
         <td>
-          <input id={'d'+"0y"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
+          <input id={'c'+"0y"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
           onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
         </td>
         <td>
-          <FontAwesomeIcon id={'da'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
+          <FontAwesomeIcon id={'ca'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
         </td>
       </tr>
     )
@@ -223,25 +221,25 @@ const Datatable = () => {
       tableBody.push(
         <tr key={'tr'+i}>
           <td>
-            <input id={'d'+(i+1)+"x"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
+            <input id={'c'+(i+1)+"x"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
             onChange={e=>editInput(e.target.id, e.target.value)} 
             onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
-            <input id={'d'+(i+1)+"y"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
+            <input id={'c'+(i+1)+"y"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
             onChange={e=>editInput(e.target.id, e.target.value)} 
             onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
-            <FontAwesomeIcon icon={faMinus} id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
+            <FontAwesomeIcon icon={faMinus} id={'cr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
           </td>
         </tr>
       );
     }
-  } else if (status === "check") {
+  } else if (centersTableStatus === "check") {
       statusClass = "checkTable";
-      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faDownload} onClick={downloadData}/>);
-      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('edit')}/>)
+      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faDownload} onClick={downloadCenters}/>);
+      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('edit')}/>)
       tableHead = 
       <tr>
         <th className="table-title">{tableTitle}</th>
@@ -270,7 +268,7 @@ const Datatable = () => {
   }
 
   return (
-    <div className="table-container" id={'dataTable'}>        
+    <div className="table-container" id={'centersTable'}>        
       <table className={statusClass}>
         <thead>
           {tableHead}
@@ -283,21 +281,5 @@ const Datatable = () => {
   );
 }
 
-/*
-    editX = editX.bind(this);
-    editY = editY.bind(this);
-    addXY = addXY.bind(this);
-    isNumeric = isNumeric.bind(this);
-    navigateTable = navigateTable.bind(this);
-    correctLastInput = correctLastInput.bind(this);
-    initializeValidValue = initializeValidValue.bind(this);
-    downloadData = downloadData.bind(this);
-    uploadData = uploadData.bind(this);
-    state = {inputX: '', inputY: '', validX: false, validY: false, 
-              lastInvalid: false, lastValidValue: null, lastFocusId: null
-              };
-*/
-
-
 // Must export!
-export default Datatable;
+export default Centerstable;

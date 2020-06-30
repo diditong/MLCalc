@@ -1,12 +1,10 @@
 html, body, #calc, .Card, .Calc, .App, #root, #wrap  {
   height: 100%;
 }
-
 #wrap {
   display: flex;
   flex-flow: column;
 }
-
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -131,14 +129,11 @@ input[type="text"] {
   border: none;
 }
 
-
-
 /* For Table Layout */
 .table-title {
   font-size: 20px;
   color: #808080;
 }
-
 .table-container {
   margin-top: 0px;
   margin-left: 15px;
@@ -148,8 +143,6 @@ input[type="text"] {
   height: 250px;
   overflow: auto;
 }
-
-
 .editTable > thead > tr > th {
   position: -webkit-sticky;
   position: sticky;
@@ -161,21 +154,17 @@ input[type="text"] {
   border-top: none;
   border-bottom: none;
 }
-
 .editTable > thead > tr > th:first-child {
   vertical-align: middle;
   text-align: left;
   padding: 0;
 }
-
 .editTable > thead > tr > th:last-child {
   text-align: right;
 }
-
 .editTable > tbody > tr {
   line-height: 30px;
 }
-
 .editTable > tbody > tr > td {
   width: 300px;
   padding-left: 10px;
@@ -185,11 +174,9 @@ input[type="text"] {
   border-top: solid 1.5px #808080;
   border-bottom: solid 1.5px #808080;
 }
-
 .editTable > tbody > tr > td:first-child {
   border-left: solid 3px #808080;
 }
-
 .editTable > tbody > tr > td:last-child {
   width: 50px;
   vertical-align: middle;
@@ -217,15 +204,12 @@ input[type="text"] {
   text-align: left;
   padding: 0;
 }
-
 .checkTable > thead > tr > th:last-child {
   text-align: right;
 }
-
 .checkTable > tbody > tr:first-child {
   background: #E8E8E8;
 }
-
 .checkTable > tbody > tr > td {
   width: 300px;
   padding-left: 10px;
@@ -235,34 +219,34 @@ input[type="text"] {
   border-top: solid 1.5px #808080;
   border-bottom: solid 1.5px #808080;
 }
-
 .checkTable > tbody > tr > td:first-child {
   border-left: solid 3px #808080;
 }
-
 .checkTable > tbody > tr > td:last-child {
   border-right: solid 3px #808080;
 }
-
 .checkTable > tbody > tr {
   line-height: 30px;
 }
-
-
-
 .input-group {
   width: 100%;
 }
+
+.tableToolbar {
+  display: flex;
+  float: right;
+}
+
 .tableBtn {
   margin-left: 10px;
   cursor: pointer;
   color: #808080;
   font-size: 20px;
+  
 }
 .tableBtn:hover{
   color: black;
 }
-
 .addBtn {
   cursor: pointer;
   color: #808080;
@@ -287,12 +271,10 @@ input[type="text"] {
 .table-container::-webkit-scrollbar {
   display: none;
 }
-
 /* Hide scrollbar for IE and Edge */
 .table-container {
   -ms-overflow-style: none;
 }
-
 textarea:focus, input:focus{
   outline: none;
 }

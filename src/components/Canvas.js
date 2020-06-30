@@ -12,25 +12,25 @@ const Canvas = () => {
       case ('KM'):
         return (
           <ClusteringContextProvider>
-            <XYcoord/>;
+            <XYcoord/>
           </ClusteringContextProvider>
         );
       case ('GM'):
         return (
           <ClusteringContextProvider>
-            <XYcoord/>;
+            <XYcoord/>
           </ClusteringContextProvider>
         );
       case ("LR"): 
         return (
           <ClusteringContextProvider>
-            <XYcoord/>;
+            <XYcoord/>
           </ClusteringContextProvider>
         );
       case ("LogR"): 
         return (
           <ClusteringContextProvider>
-            <XYcoord/>;
+            <XYcoord/>
           </ClusteringContextProvider>
         );
       case ("BN"): 

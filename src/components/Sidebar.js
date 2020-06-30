@@ -1,15 +1,12 @@
 import React, {useContext} from 'react';
-import KMTools from './KMTools';
 import KMengine from './KMengine';
 import Datatable from './Datatable';
-import Centertable from './Centertable';
-import { AppContext } from "../AppContext";
+import Centerstable from './Centerstable';
+import { AppContext } from '../AppContext';
 import {ClusteringContextProvider} from "./ClusteringContext"
-
 
 const Sidebar = () => {
   const {module, setModule} = useContext(AppContext);
-  console.log("From Sidebar: ", module);
 	const sidebarSwitch = (mod) => {
 		switch(mod) {
 			case 'KM':
@@ -18,6 +15,7 @@ const Sidebar = () => {
             <div>
               <KMengine /> 
               <Datatable />
+              <Centerstable />
             </div>
           </ClusteringContextProvider>
         );

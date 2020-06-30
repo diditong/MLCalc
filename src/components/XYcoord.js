@@ -1,9 +1,10 @@
 
-import React, {useState, useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {ClusteringContext} from './ClusteringContext';
 
 const XYcoord = () => {
-  const {data, centers, results, currIteration} = useContext(ClusteringContext);
+  const {data, centers, results, currIteration} = 
+    useContext(ClusteringContext);
   const [W, setW] = useState(window.innerWidth-Math.floor(window.innerWidth/4));
   const [H, setH] = useState(window.innerHeight-56);
   const [cx, setCx] = useState((window.innerWidth-Math.floor(window.innerWidth/4))/2);
@@ -11,11 +12,9 @@ const XYcoord = () => {
   const [centerx, setCenterx] = useState((window.innerWidth-Math.floor(window.innerWidth/4))/2);
   const [centery, setCentery] = useState((window.innerHeight-56)/2);
   const [gs, setGs] = useState(18);
-  const [gridSize, setGridSize] = useState(18);
   const [ns, setNs] = useState(4);
   const [co, setCo] = useState(2);
   const [exp, setExp] = useState(0);
-  const [zoom, setZoom] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
   const [dragStartY, setDragStartY] = useState(0);
@@ -23,8 +22,6 @@ const XYcoord = () => {
   const [y, setY] = useState(0);
   const [ox, setOx] = useState(Math.floor(window.innerWidth/4));
   const [oy, setOy] = useState(56);
-
-
 
   const updateUnitLength = (zoom) => {
     if (zoom === 1) {
@@ -109,12 +106,11 @@ const XYcoord = () => {
   }
 
   const mouseMove = (evt) => {
-    let cursorX = evt.clientX;
-    let cursorY = evt.clientY;
-    setX((cursorX-cx-ox)/(gs*ns)*(co*Math.pow(10,exp)));
-    setY((cy-cursorY+oy)/(gs*ns)*(co*Math.pow(10,exp)));
-
     if (dragging) {
+      let cursorX = evt.clientX;
+      let cursorY = evt.clientY;
+      setX((cursorX-cx-ox)/(gs*ns)*(co*Math.pow(10,exp)));
+      setY((cy-cursorY+oy)/(gs*ns)*(co*Math.pow(10,exp)));
       setCx(centerx+cursorX-dragStartX);
       setCy(centery+cursorY-dragStartY);
     }
@@ -171,7 +167,7 @@ const XYcoord = () => {
         grids.push(<line key={'vl'+i} className='x-grids' x1={x} y1='0' x2={x} y2={H} strokeWidth='0.5' stroke='#CCCCCC'/>);
       }
     }
-    return grids;
+    return (grids);
   }
 
   const generateTick = (j) => {
@@ -211,35 +207,35 @@ const XYcoord = () => {
       }
     }
     if (negative) {
-      return '-'+tick;
+      return ('-'+tick);
     } else {
-      return tick;
+      return (tick);
     }
   }
 
   const generateDataPoints = () => {
-    let points = [];
+    let dataPoints = [];
     for (var i=0; i<data.length; i++) {
       let x = data[i][0];
       let y = data[i][1];
       let currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
       let currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
-      points.push(<circle key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill="black" onMouseOver={showCoord}/>);
+      dataPoints.push(<circle key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill="black" onMouseOver={showCoord}/>);
     }
-    return points;
+    return (dataPoints);
   }
 
   const generateCenterPoints = () => {
-    console.log("gcp: ", centers, currIteration);
-    var currCenters = null;
+    let centerPoints = [];
+    let currCenters = null;
     if (currIteration === 0) {
       currCenters = centers;
     } else {
       currCenters = results[currIteration-1];
     }
+
     var polyPoints = [[0,-11.264],[-6.6,9.416],[9.9,-3.784],[-9.9,-3.784],[6.6,9.416]];
     for (var i=0; i<currCenters.length; i++) {
-      console.log("loop1: ", i, currCenters.length);
       let points = "";
       let x = currCenters[i][0];
       let y = currCenters[i][1];
@@ -248,62 +244,31 @@ const XYcoord = () => {
       for (var j=0; j<5; j++) {
         let polyPointX = polyPoints[j][0];
         let polyPointY = polyPoints[j][1];
-        points += (polyPointX+currX)+","+(polyPointY+currY)+" ";   
+        points += (polyPointX+currX)+","+(polyPointY+currY)+" ";
       }
-      centers.push(<polygon points={points} key={'c'+i} fill="red" fill-opacity="0.5"/>);
-      break;
+      centerPoints.push(<polygon points={points} key={'c'+i} fill="red" fillOpacity="0.5"/>);
     } //9.9,12.364
-    return centers;
+    return (centerPoints);
   }
 
-  let grids = generateGrids();
-  let dataPoints = generateDataPoints();
-  console.log("reached after datapoints");
-  let centerPoints = generateCenterPoints();
-  console.log("reached after centerpoints");
-  let coordsys = <svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
+  useEffect(() => {
+    function handleResize() {
+      setW(window.innerWidth-Math.ceil(window.innerWidth/4));
+      setH(window.innerHeight-57);
+    }
+      window.addEventListener('resize', handleResize);
+  });
+
+  var grids = generateGrids();
+  var dataPoints = generateDataPoints();
+  var centerPoints = generateCenterPoints();
+  var coordsys = <svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
                   <g id='b'>
                     {grids.concat(centerPoints,dataPoints)}
                   </g>
                 </svg>
-  return (
-    coordsys
-  );
+  
+  return (coordsys);
 }
-
-
 // Must export!
 export default XYcoord;
-
-/*
-  componentDidMount() {
-    window.addEventListener("resize", updateWindowDimensions);
-  }
-  
-  componentWillUnmount() {
-    window.removeEventListener("resize", updateWindowDimensions);
-  }
-  updateWindowDimensions () {
-    setState({W: window.innerWidth-Math.ceil(window.innerWidth/4), H: window.innerHeight-57});
-  }
-
-*/
-
-
-
-/*
-    scrollZoom = scrollZoom.bind(this);
-    mouseDown = mouseDown.bind(this);
-    mouseMove = mouseMove.bind(this);
-    mouseUp = mouseUp.bind(this);
-    updateUnitLength = updateUnitLength.bind(this);
-    updateGridSize = updateGridSize.bind(this);
-    updateCenter = updateCenter.bind(this);
-    updateWindowDimensions = updateWindowDimensions.bind(this);
-    generateTick = generateTick.bind(this);
-    generateGrids = generateGrids.bind(this);
-    generateData = generateData.bind(this);
-    generateCenters = generateCenters.bind(this);
-    showCoord = showCoord.bind(this);
-    }
-*/
