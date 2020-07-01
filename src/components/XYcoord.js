@@ -250,6 +250,8 @@ const XYcoord = () => {
     return (centerPoints);
   }
 
+  
+
   useEffect(() => {
     function handleResize() {
       setW(window.innerWidth-Math.ceil(window.innerWidth/4));
@@ -259,7 +261,6 @@ const XYcoord = () => {
   });
 
   let points = data;
-  console.log("From XYcoord, ", points);
 
   let grids = generateGrids();
   let dataPoints = generateDataPoints();

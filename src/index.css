@@ -236,13 +236,11 @@ input[type="text"] {
   display: flex;
   float: right;
 }
-
 .tableBtn {
   margin-left: 10px;
   cursor: pointer;
   color: #808080;
   font-size: 20px;
-  
 }
 .tableBtn:hover{
   color: black;
@@ -275,6 +273,7 @@ input[type="text"] {
 .table-container {
   -ms-overflow-style: none;
 }
+
 textarea:focus, input:focus{
   outline: none;
 }

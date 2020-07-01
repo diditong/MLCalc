@@ -182,7 +182,6 @@ const Datatable = () => {
   let tableBody = [];
   let tableHead = null;
 
-  console.log("From Datatable, ", points);
   if (status === "edit") {
     statusClass = "editTable";
     
