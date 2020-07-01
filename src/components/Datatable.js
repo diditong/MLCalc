@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckSquare, faUpload, faDownload, faEdit, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faUpload, faDownload, faEdit, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import FileSaver from 'file-saver';
 import ReactFileReader from 'react-file-reader';
 import {ClusteringContext} from "./ClusteringContext"
@@ -17,21 +17,38 @@ const Datatable = () => {
   const [validX, setValidX] = useState(null);
   const [validY, setValidY] = useState(null);
 
-  const navigateTable = (event) => {
-    const arrow = {
+  const navigateTable = (key) => {
+
+  }
+
+
+  const handlePressKey = (event) => {
+    const keys = {
       left: 37,
       up: 38,
       right: 39,
-      down: 40
+      down: 40,
+      enter: 13,
+      delete: 46
     };
   
     let input = event.target;
-  
+    let key = event.keyCode;
     let id = event.target.id;
+    
+    if (key === keys.enter) {
+      console.log("hit enter");
+      let toAdd = (id.slice(0,2) === 'd0') ? addInput('da') : null;
+    } else if (key === keys.delete) {
+      event.preventDefault();
+      let toDel = (id.slice(0,2) !== 'd0') ? deletePoint('dr'+(id[1]-1)) : null;
+    }
+    
+    else {
+
     let typeId = id[0];
     let rowId = id.slice(1, id.length-1);
     let colId = id[id.length-1];
-    let key = event.keyCode;
     let newId = id;
     let start = null;
     let end = null;
@@ -39,7 +56,7 @@ const Datatable = () => {
     let inputLength = (data.length).toString();
 
     switch (key) {
-      case arrow.left:
+      case keys.left:
         { 
           if ((colId==='y') && (input.selectionStart==0)) { 
             newId = typeId + rowId + 'x';
@@ -49,7 +66,7 @@ const Datatable = () => {
         }
           break;
         }
-      case arrow.right:
+      case keys.right:
         {
           if ((colId === 'x') && (input.selectionEnd==input.value.length)) {
             newId = typeId + rowId + 'y';
@@ -59,7 +76,7 @@ const Datatable = () => {
           }
           break;
         }
-      case arrow.up:
+      case keys.up:
         {
           if (rowId !== '0') {
             newId = typeId + (parseInt(rowId)-1) + colId;
@@ -69,7 +86,7 @@ const Datatable = () => {
           }
           break;
         }
-      case arrow.down:
+      case keys.down:
         {
           if (rowId !== inputLength) {
             newId = typeId + (parseInt(rowId)+1) + colId;
@@ -87,6 +104,7 @@ const Datatable = () => {
       newInput.selectionStart = start;
       newInput.selectionEnd = end;
     }
+  }
   }
 
   const isNumeric = (value) => {
@@ -142,6 +160,7 @@ const Datatable = () => {
   }
 
   const addInput = (id) => {
+    console.log("addInput: ", id, validX, validY, inputX, inputY);
     if (validX && validY) {
       addPoint(id, inputX, inputY);
     }
@@ -152,8 +171,8 @@ const Datatable = () => {
     var csvContent = "data:text/csv;charset=utf-8,";
   
     rawData.forEach(function(pointArray) {
-        var point = pointArray.join(",");
-        csvContent += point + "\r\n";
+      var point = pointArray.join(",");
+      csvContent += point + "\r\n";
     });
     FileSaver.saveAs(csvContent, 'data.csv');
   }
@@ -188,9 +207,9 @@ const Datatable = () => {
     tableButtons.push(
       <div className="tableToolbar">
         <ReactFileReader handleFiles={uploadData} fileTypes={'.csv'}>
-          <FontAwesomeIcon className="tableBtn" icon={faUpload} />
+          <FontAwesomeIcon title="Upload data" className="tableBtn" icon={faUpload} />
         </ReactFileReader>
-        <FontAwesomeIcon className="tableBtn" icon={faCheckSquare} onClick={()=>setDataTableStatus('check')}/>
+        <FontAwesomeIcon title="Save data" className="tableBtn" icon={faSave} onClick={()=>setDataTableStatus('check')}/>
       </div>
     );
 
@@ -206,12 +225,12 @@ const Datatable = () => {
     tableBody.push(
       <tr>
         <td>
-          <input id={'d'+"0x"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
-          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
+          <input id={'d0x'} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
+          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={handlePressKey}/>
         </td>
         <td>
-          <input id={'d'+"0y"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
-          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
+          <input id={'d0y'} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
+          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={handlePressKey}/>
         </td>
         <td>
           <FontAwesomeIcon id={'da'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
@@ -225,12 +244,12 @@ const Datatable = () => {
           <td>
             <input id={'d'+(i+1)+"x"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
             onChange={e=>editInput(e.target.id, e.target.value)} 
-            onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
+            onKeyDown={handlePressKey} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
             <input id={'d'+(i+1)+"y"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
             onChange={e=>editInput(e.target.id, e.target.value)} 
-            onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
+            onKeyDown={handlePressKey} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
             <FontAwesomeIcon icon={faMinus} id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
@@ -240,8 +259,8 @@ const Datatable = () => {
     }
   } else if (status === "check") {
       statusClass = "checkTable";
-      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faDownload} onClick={downloadData}/>);
-      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('edit')}/>)
+      tableButtons.push(<FontAwesomeIcon title="Download data" className="tableBtn" icon={faDownload} onClick={downloadData}/>);
+      tableButtons.push(<FontAwesomeIcon title="Edit data" className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('edit')}/>)
       tableHead = 
       <tr>
         <th className="table-title">{tableTitle}</th>
@@ -288,7 +307,7 @@ const Datatable = () => {
     editY = editY.bind(this);
     addXY = addXY.bind(this);
     isNumeric = isNumeric.bind(this);
-    navigateTable = navigateTable.bind(this);
+    handlePressKey = handlePressKey.bind(this);
     correctLastInput = correctLastInput.bind(this);
     initializeValidValue = initializeValidValue.bind(this);
     downloadData = downloadData.bind(this);

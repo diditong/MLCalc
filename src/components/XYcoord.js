@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {ClusteringContext} from './ClusteringContext';
 
 const XYcoord = () => {
-  const {data, centers, results, currIteration} = 
+  const {data, centers, colors, results, currIteration} = 
     useContext(ClusteringContext);
   const [W, setW] = useState(window.innerWidth-Math.floor(window.innerWidth/4));
   const [H, setH] = useState(window.innerHeight-56);
@@ -245,12 +245,12 @@ const XYcoord = () => {
         let polyPointY = polyPoints[j][1];
         points += (polyPointX+currX)+","+(polyPointY+currY)+" ";
       }
-      centerPoints.push(<polygon points={points} key={'c'+i} fill="red" fillOpacity="0.5"/>);
+      centerPoints.push(<polygon points={points} key={'c'+i} fill={colors[i]} fillOpacity="0.5"/>);
     } //9.9,12.364
     return (centerPoints);
   }
 
-  
+
 
   useEffect(() => {
     function handleResize() {

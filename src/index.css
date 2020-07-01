@@ -210,6 +210,9 @@ input[type="text"] {
 .checkTable > tbody > tr:first-child {
   background: #E8E8E8;
 }
+.checkTable > tbody > tr:first-child > td:last-child {
+  background: white;
+}
 .checkTable > tbody > tr > td {
   width: 300px;
   padding-left: 10px;
@@ -223,7 +226,13 @@ input[type="text"] {
   border-left: solid 3px #808080;
 }
 .checkTable > tbody > tr > td:last-child {
-  border-right: solid 3px #808080;
+  width: 50px;
+  vertical-align: middle;
+  text-align: right;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-top: none;
 }
 .checkTable > tbody > tr {
   line-height: 30px;

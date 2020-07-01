@@ -1,9 +1,11 @@
 import React, {useState, useContext} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckSquare, faUpload, faDownload, faEdit, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faUpload, faDownload, faEdit, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import FileSaver from 'file-saver';
 import ReactFileReader from 'react-file-reader';
 import {ClusteringContext} from "./ClusteringContext"
+import Colorpicker from './Colorpicker';
+
 
 const Centerstable = () => {
   const {centers, centersTableStatus, setCentersTableStatus, addPoint, editPoint, deletePoint} 
@@ -152,8 +154,8 @@ const Centerstable = () => {
     var csvContent = "centers:text/csv;charset=utf-8,";
   
     rawCenters.forEach(function(pointArray) {
-        var point = pointArray.join(",");
-        csvContent += point + "\r\n";
+      var point = pointArray.join(",");
+      csvContent += point + "\r\n";
     });
     FileSaver.saveAs(csvContent, 'centers.csv');
   }
@@ -187,9 +189,9 @@ const Centerstable = () => {
     tableButtons.push(
       <div className="tableToolbar">
         <ReactFileReader handleFiles={uploadCenters} fileTypes={'.csv'}>
-          <FontAwesomeIcon className="tableBtn" icon={faUpload} />
+          <FontAwesomeIcon title="Upload centers" className="tableBtn" icon={faUpload} />
         </ReactFileReader>
-        <FontAwesomeIcon className="tableBtn" icon={faCheckSquare} onClick={()=>setCentersTableStatus('check')}/>
+        <FontAwesomeIcon title="Save centers" className="tableBtn" icon={faSave} onClick={()=>setCentersTableStatus('check')}/>
       </div>
     );
     tableHead = 
@@ -238,12 +240,12 @@ const Centerstable = () => {
     }
   } else if (centersTableStatus === "check") {
       statusClass = "checkTable";
-      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faDownload} onClick={downloadCenters}/>);
-      tableButtons.push(<FontAwesomeIcon className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('edit')}/>)
+      tableButtons.push(<FontAwesomeIcon title="Download centers" className="tableBtn" icon={faDownload} onClick={downloadCenters}/>);
+      tableButtons.push(<FontAwesomeIcon title="Edit centers" className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('edit')}/>)
       tableHead = 
       <tr>
         <th className="table-title">{tableTitle}</th>
-        <th>
+        <th colSpan="2">
           {tableButtons}
         </th>
       </tr>
@@ -251,6 +253,7 @@ const Centerstable = () => {
       <tr>
         <td>X</td>
         <td>Y</td>
+        <td></td>
       </tr>
       );
       for (var i=0; i<points.length; i++){
@@ -261,6 +264,9 @@ const Centerstable = () => {
             </td>
             <td>
               {points[i][1].toFixed(10)}
+            </td>
+            <td>
+              <Colorpicker />
             </td>
           </tr>
         );

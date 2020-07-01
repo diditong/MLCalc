@@ -3,20 +3,23 @@ import KMengine from './KMengine';
 import Datatable from './Datatable';
 import Centerstable from './Centerstable';
 import { AppContext } from '../AppContext';
+import Colorpicker from './Colorpicker';
 import {ClusteringContextProvider} from "./ClusteringContext"
 
 const Sidebar = () => {
   const {module, setModule} = useContext(AppContext);
 	const sidebarSwitch = (mod) => {
 		switch(mod) {
-			case 'KM':
+			case 'KM': {
 				return (
           <div>
             <KMengine /> 
             <Datatable />
             <Centerstable />
+            <Colorpicker />
           </div>
         );
+      }
 			case 'GM':
 				//return <GMCalc />;
 			case 'LR':

@@ -12,28 +12,28 @@ const KMengine = () => {
     <div className="outer-menu">
       <div className="bar">
         <ul>
-          <li data-title="Start Over"> 
+          <li title="Restart" data-title="Start Over"> 
             <FontAwesomeIcon icon={faRedo} />
           </li>
-          <li data-title="Autoplay"> 
+          <li title="Autoplay" data-title="Autoplay"> 
             <FontAwesomeIcon icon={faPlay} />
           </li>
-          <li data-title="Prev. Step">
+          <li title="Prev. Step" data-title="Prev. Step">
             <FontAwesomeIcon icon={faStepBackward} />
           </li>
-          <li data-title="Next Step"> 
+          <li title="Next Step" data-title="Next Step"> 
             <FontAwesomeIcon icon={faStepForward} />
           </li>
-          <li data-title="Prev. Iter.">
+          <li title="Prev. Iter." data-title="Prev. Iter.">
             <FontAwesomeIcon icon={faFastBackward} onClick={accessPrevIteration}/>
           </li>
-          <li data-title="Next Iter." onClick={computeNextIteration}>
+          <li title="Next Iter." data-title="Next Iter." onClick={computeNextIteration}>
             <FontAwesomeIcon icon={faFastForward} />
           </li>
-          <li data-title="Final Result">
+          <li title="Final Result" data-title="Final Result">
             <FontAwesomeIcon icon={faKey} />
           </li>
-          <li data-title="View">
+          <li title="View" data-title="View">
               <FontAwesomeIcon icon={faEye} />
               <ul>
                   <li data-title="Hide Shadows">

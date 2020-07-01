@@ -26,6 +26,7 @@ const initialState = {
   data: generateRandomData(),
   results: [],
   centers: [[2,2],[-2,2],[-2,-2]],
+  colors: ["#A4DD00","#68CCCA","#FDA1FF"],
   dataTableStatus: 'edit',
   centersTableStatus: 'edit',
   currIteration: 0,
@@ -52,6 +53,16 @@ const sameCenters = (centers1, centers2) => {
     }
   }
 }
+
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 
 const reducer = (state, action) => {
   let id = null;
@@ -113,7 +124,11 @@ const reducer = (state, action) => {
       if (id === 'da') {
         return {...state, data: [[inputX, inputY]].concat(oldData)};
       } else if (id === 'ca') {
-        return {...state, centers: [[inputX, inputY]].concat(state.centers)};
+        console.log(state.colors);
+        return {...state, 
+          centers: [[inputX, inputY]].concat(state.centers),
+          colors: [getRandomColor()].concat(state.colors)
+        };
       } else {
         return {...state};
       }
@@ -236,9 +251,11 @@ export const ClusteringContextProvider = props => {
     deletePoint: id => {
       dispatch({type: 'DEL_POINT', payload: {id:id}})
     },
+
     results: state.results,
     centers: state.centers,
-
+    colors: state.colors,
+    
     dataTableStatus: state.dataTableStatus,
     setDataTableStatus: value=>{
       dispatch({type: 'SET_DATATABLESTATUS', payload: value})
