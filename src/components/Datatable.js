@@ -142,7 +142,6 @@ const Datatable = () => {
   }
 
   const addInput = (id) => {
-    console.log("From addinput: ", id);
     if (validX && validY) {
       addPoint(id, inputX, inputY);
     }
@@ -182,6 +181,8 @@ const Datatable = () => {
   let tableButtons = [];
   let tableBody = [];
   let tableHead = null;
+
+  console.log("From Datatable, ", points);
   if (status === "edit") {
     statusClass = "editTable";
     

@@ -6,7 +6,7 @@ import {ClusteringContext} from './ClusteringContext';
 
 const KMengine = () => {
 
-  const {computeNextIteration} = useContext(ClusteringContext);
+  const {computeNextIteration, accessPrevIteration} = useContext(ClusteringContext);
   
   return (
     <div className="outer-menu">
@@ -25,7 +25,7 @@ const KMengine = () => {
             <FontAwesomeIcon icon={faStepForward} />
           </li>
           <li data-title="Prev. Iter.">
-            <FontAwesomeIcon icon={faFastBackward} />
+            <FontAwesomeIcon icon={faFastBackward} onClick={accessPrevIteration}/>
           </li>
           <li data-title="Next Iter." onClick={computeNextIteration}>
             <FontAwesomeIcon icon={faFastForward} />

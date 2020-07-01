@@ -1,4 +1,3 @@
-
 import React, {useState, useEffect, useContext} from 'react';
 import {ClusteringContext} from './ClusteringContext';
 
@@ -234,7 +233,7 @@ const XYcoord = () => {
       currCenters = results[currIteration-1];
     }
 
-    var polyPoints = [[0,-11.264],[-6.6,9.416],[9.9,-3.784],[-9.9,-3.784],[6.6,9.416]];
+    const polyPoints = [[0,-11.264],[-6.6,9.416],[9.9,-3.784],[-9.9,-3.784],[6.6,9.416]];
     for (var i=0; i<currCenters.length; i++) {
       let points = "";
       let x = currCenters[i][0];
@@ -256,13 +255,16 @@ const XYcoord = () => {
       setW(window.innerWidth-Math.ceil(window.innerWidth/4));
       setH(window.innerHeight-57);
     }
-      window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize);
   });
 
-  var grids = generateGrids();
-  var dataPoints = generateDataPoints();
-  var centerPoints = generateCenterPoints();
-  var coordsys = <svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
+  let points = data;
+  console.log("From XYcoord, ", points);
+
+  let grids = generateGrids();
+  let dataPoints = generateDataPoints();
+  let centerPoints = generateCenterPoints();
+  let coordsys = <svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
                   <g id='b'>
                     {grids.concat(centerPoints,dataPoints)}
                   </g>

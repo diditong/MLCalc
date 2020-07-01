@@ -56,7 +56,6 @@ const sameCenters = (centers1, centers2) => {
 const reducer = (state, action) => {
   let id = null;
   let type = null;
-  let actionType = action.type;
   switch (action.type) {
     case ("SET_DATATABLESTATUS"):
       return {...state, dataTableStatus: action.payload};
@@ -84,15 +83,30 @@ const reducer = (state, action) => {
       } else {
           return {...state};
       }
+    case("EDIT_POINT"):
+      console.log('reached edit point');
+      id = action.payload.id;
+      type = id[0];
+      let value = action.payload.value;
+      let idx = id.slice(1,-1)-1;
+      let coord = (id[id.length-1]==='x') ? 0 : 1;
+      if (type === "d") {
+        console.log("reached d");
+        let newData = [...state.data];
+        newData[idx][coord] = value;
+        return {...state, data: newData};
+      } else if (type === "c") {
+        let newCenters = [...state.centers];
+        newCenters[idx][coord] = value;
+        return {...state, centers: newCenters};
+      }
     case("ADD_POINT"):
-      console.log("reached add point"); 
       id = action.payload.id;
       var inputX = parseFloat(action.payload.inputX);
       var inputY = parseFloat(action.payload.inputY);
       let oldData = [...state.data];
       
       if (id === 'da') {
-        console.log("reached check type");
         return {...state, data: [[inputX, inputY]].concat(oldData)};
       } else if (id === 'ca') {
         return {...state, centers: [[inputX, inputY]].concat(state.centers)};
@@ -100,10 +114,9 @@ const reducer = (state, action) => {
         return {...state};
       }
     case ("NEXT_IT"):
-      console.log("reached next iteration");
+      console.log("reached iteration");
       if (state.finalResult) {
         alert("Reached final result");
-        return [...state];
       } else {
         let data = state.data;
         let centers = state.centers;
@@ -163,19 +176,25 @@ const reducer = (state, action) => {
               state.finalResult = true;
             }
           }
-          console.log(newCenters);
-  
+
           if (!finalResult) {
             let oldResults = [...state.results];
-            state.results = oldResults.concat(newCenters);
+            state.results = oldResults.concat([newCenters]);
             state.currIteration += 1;
           }
           //console.log("results are ", results);
           //console.log("final result: ", this.state.finalResult);
-        } 
+        }
       }
       return {...state};
-    /*
+    case ('PREV_IT'):
+      console.log("reached prev it");
+      if (state.currIteration !== 0){
+        return {...state, currIteration: state.currIteration-1};
+      } else {
+        return {...state}
+      }
+      /*
     case ("CLEAR_POINTS"):
       
     case "UPDATE_RESULTS":
@@ -196,7 +215,9 @@ export const ClusteringContextProvider = props => {
     addPoint: (id, inputX, inputY) => {
       dispatch({type: 'ADD_POINT', payload: {id:id, inputX:inputX, inputY:inputY}})
     },
-    editPoint: () => {},
+    editPoint: (id, value) => {
+      dispatch({type: 'EDIT_POINT', payload: {id:id, value:value}})
+    },
     deletePoint: id => {
       dispatch({type: 'DEL_POINT', payload: {id:id}})
     },
@@ -221,6 +242,9 @@ export const ClusteringContextProvider = props => {
     currIteration: state.currIteration,
     computeNextIteration: () => {
       dispatch({type: 'NEXT_IT', payload: null})
+    },
+    accessPrevIteration: () => {
+      dispatch({type: 'PREV_IT', payload: null})
     }
   }
 
@@ -244,11 +268,7 @@ export const ClusteringContextProvider = props => {
     }
   }
   
-  accessPreviousIteration () {
-    if (this.props.currIteration != 0) {
-      this.props.setIteration(this.props.currIteration-1);
-    }
-  }
+
 
 
 

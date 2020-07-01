@@ -11,27 +11,19 @@ const Canvas = () => {
     switch(mod) {
       case ('KM'):
         return (
-          <ClusteringContextProvider>
-            <XYcoord/>
-          </ClusteringContextProvider>
+          <XYcoord/>
         );
       case ('GM'):
         return (
-          <ClusteringContextProvider>
-            <XYcoord/>
-          </ClusteringContextProvider>
+          <XYcoord/>
         );
       case ("LR"): 
         return (
-          <ClusteringContextProvider>
-            <XYcoord/>
-          </ClusteringContextProvider>
+          <XYcoord/>
         );
       case ("LogR"): 
         return (
-          <ClusteringContextProvider>
-            <XYcoord/>
-          </ClusteringContextProvider>
+          <XYcoord/>
         );
       case ("BN"): 
         return <h1> Fill me with BN </h1>;

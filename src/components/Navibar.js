@@ -9,7 +9,7 @@ const Navibar = () => {
   console.log("Language: ", language);
   return (
     <Navbar className="navi" collapseOnSelect expand="lg" bg="dark" variant="dark">
-      <Navbar.Brand href="#home">MLCalc - ML Calculator 0.1.1</Navbar.Brand>
+      <Navbar.Brand href="#home">MLCalc - ML Calculator 0.1.1 (Under Development)</Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">

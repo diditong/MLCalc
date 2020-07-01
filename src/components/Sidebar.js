@@ -11,13 +11,11 @@ const Sidebar = () => {
 		switch(mod) {
 			case 'KM':
 				return (
-          <ClusteringContextProvider>
-            <div>
-              <KMengine /> 
-              <Datatable />
-              <Centerstable />
-            </div>
-          </ClusteringContextProvider>
+          <div>
+            <KMengine /> 
+            <Datatable />
+            <Centerstable />
+          </div>
         );
 			case 'GM':
 				//return <GMCalc />;
