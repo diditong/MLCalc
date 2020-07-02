@@ -25,7 +25,7 @@ const generateRandomData = () => {
 const initialState = {
   data: generateRandomData(),
   results: [],
-  centers: [[2,2],[-2,2],[-2,-2]],
+  centers: [[2,2],[-2,2],[0,-2]],
   colors: ["#A4DD00","#68CCCA","#FDA1FF"],
   dataTableStatus: 'edit',
   centersTableStatus: 'edit',
@@ -35,8 +35,6 @@ const initialState = {
 };
 
 const sameCenters = (centers1, centers2) => {
-  //console.log("same centers, original: ", centers1, centers2);
-  //console.log("same centers, equal: ", [1,2] === [1,2]);
   if (centers2==null) {
     return false;
   } else {
@@ -98,14 +96,12 @@ const reducer = (state, action) => {
       }
     }
     case("EDIT_POINT"): {
-      console.log('reached edit point');
       id = action.payload.id;
       type = id[0];
       let value = action.payload.value;
       let idx = id.slice(1,-1)-1;
       let coord = (id[id.length-1]==='x') ? 0 : 1;
       if (type === "d") {
-        console.log("reached d");
         let newData = [...state.data];
         newData[idx][coord] = value;
         return {...state, data: newData};
@@ -124,7 +120,6 @@ const reducer = (state, action) => {
       if (id === 'da') {
         return {...state, data: [[inputX, inputY]].concat(oldData)};
       } else if (id === 'ca') {
-        console.log(state.colors);
         return {...state, 
           centers: [[inputX, inputY]].concat(state.centers),
           colors: [getRandomColor()].concat(state.colors)
@@ -132,6 +127,13 @@ const reducer = (state, action) => {
       } else {
         return {...state};
       }
+    }
+    case ('SET_DATA'): {
+      return {...state, data: action.payload.data};
+    }
+    case ('SET_CENTERS'): {
+      console.log("reached set centers");
+      return {...state, centers: action.payload.centers};
     }
     case ("NEXT_IT"): {
       let currIteration = state.currIteration;
@@ -150,7 +152,6 @@ const reducer = (state, action) => {
           currCenters = results[currIteration-1];
         }
         let currDataPoint = null;
-        //console.log(currIteration, results.length);
         if (currIteration < results.length) {
           state.currIteration += 1;
         } else {
@@ -175,7 +176,6 @@ const reducer = (state, action) => {
             dictForUpdateResults[minIndex].push([currDataPoint[0], currDataPoint[1]]);
           }
           let values = Object.values(dictForUpdateResults);
-          //console.log(values);
           for (var i=0; i<values.length; i++) {
             let currGroup = values[i];
             let groupLength = currGroup.length;
@@ -192,7 +192,6 @@ const reducer = (state, action) => {
             } else {
               newCenters.push(currCenters[i]);
             }
-            //console.log(newCenters, results[results.length-1])
             if (sameCenters(newCenters, centers) | sameCenters(newCenters, results[results.length-1])) {
               state.finalResult = true;
             }
@@ -203,8 +202,6 @@ const reducer = (state, action) => {
             state.results = oldResults.concat([newCenters]);
             state.currIteration += 1;
           }
-          //console.log("results are ", results);
-          //console.log("final result: ", this.state.finalResult);
         }
       }
       return {...state};
@@ -223,7 +220,13 @@ const reducer = (state, action) => {
     case ('PREV_STEP'): {
       
     }
-      
+    case ('SET_COLORS'): {
+      let id = action.payload.id;
+      let newColor = action.payload.value;
+      let newColors = state.colors;
+      newColors[id] = newColor;
+      return {...state, colors: newColors}
+    }
       /*
     case ("CLEAR_POINTS"):
       
@@ -251,10 +254,16 @@ export const ClusteringContextProvider = props => {
     deletePoint: id => {
       dispatch({type: 'DEL_POINT', payload: {id:id}})
     },
+    setData: data => {
+      dispatch({type: 'SET_DATA', payload: {data:data}})
+    },
 
     results: state.results,
     centers: state.centers,
     colors: state.colors,
+    setColors: (id, value)=>{
+      dispatch({type: 'SET_COLORS', payload: {id:id, value: value}})
+    },
     
     dataTableStatus: state.dataTableStatus,
     setDataTableStatus: value=>{
@@ -264,6 +273,9 @@ export const ClusteringContextProvider = props => {
     centersTableStatus: state.centersTableStatus,
     setCentersTableStatus: value=>{
       dispatch({type: 'SET_CENTERSTABLESTATUS', payload: value})
+    },
+    setCenters: centers=>{
+      dispatch({type:'SET_CENTERS', payload: centers})
     },
 
     finalResult: state.finalResult,
@@ -291,7 +303,6 @@ export const ClusteringContextProvider = props => {
 
 
 
-  //console.log("From Clustering Context, ", state.data);
   return (
     <ClusteringContext.Provider value={value}>
       {props.children}
@@ -302,7 +313,6 @@ export const ClusteringContextProvider = props => {
 
 /*
   computeFinalResult () {
-    console.log("!finalResult: ", !this.state.finalResult);
     while (!this.state.finalResult) {
       this.setState({finalResult: this.computeNextIteration()})
     }

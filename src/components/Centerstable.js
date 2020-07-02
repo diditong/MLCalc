@@ -8,7 +8,7 @@ import Colorpicker from './Colorpicker';
 
 
 const Centerstable = () => {
-  const {centers, centersTableStatus, setCentersTableStatus, addPoint, editPoint, deletePoint} 
+  const {colors, centers, setCenters, centersTableStatus, setCentersTableStatus, addPoint, editPoint, deletePoint} 
     = useContext(ClusteringContext);
   const [lastFocusId, setLastFocusId] = useState(null);
   const [lastInvalid, setLastInvalid] = useState(null);
@@ -17,6 +17,8 @@ const Centerstable = () => {
   const [inputY, setInputY] = useState(null);
   const [validX, setValidX] = useState(null);
   const [validY, setValidY] = useState(null);
+
+  console.log("From Centerstable1: ", colors);
 
   const navigateTable = (event) => {
     const arrow = {
@@ -150,8 +152,9 @@ const Centerstable = () => {
   }
 
   const downloadCenters = () => {
+    console.log("reached downloadCenters");
     var rawCenters = centers;
-    var csvContent = "centers:text/csv;charset=utf-8,";
+    var csvContent = "data:text/csv;charset=utf-8,";
   
     rawCenters.forEach(function(pointArray) {
       var point = pointArray.join(",");
@@ -161,16 +164,17 @@ const Centerstable = () => {
   }
 
   const uploadCenters = (files) => {
-    //clearPoints();
     var reader = new FileReader();
     var centers = [];
-    reader.onload = function () {
+    reader.onload = () => {
       var lines = reader.result.split("\n");
       var pair = null;
       for (var i=0; i<lines.length; i++) {
         pair = lines[i].split(",");
         centers.push([parseFloat(pair[0]),parseFloat(pair[1])]);
       }
+      console.log("HERE ", centers);
+      setCenters(centers);
     };
     reader.readAsText(files[0]);
   }
@@ -239,6 +243,7 @@ const Centerstable = () => {
       );
     }
   } else if (centersTableStatus === "check") {
+      console.log('here we go ',colors[0]);
       statusClass = "checkTable";
       tableButtons.push(<FontAwesomeIcon title="Download centers" className="tableBtn" icon={faDownload} onClick={downloadCenters}/>);
       tableButtons.push(<FontAwesomeIcon title="Edit centers" className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('edit')}/>)
@@ -266,13 +271,16 @@ const Centerstable = () => {
               {points[i][1].toFixed(10)}
             </td>
             <td>
-              <Colorpicker />
+              <Colorpicker id={i} color={colors[i]}/>
             </td>
           </tr>
         );
       }
   }
 
+  console.log("From Centerstable: ", colors[i]);
+  
+  
   return (
     <div className="table-container" id={'centersTable'}>        
       <table className={statusClass}>

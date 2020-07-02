@@ -2,7 +2,11 @@ import React, { useContext } from 'react';
 import { Nav, Navbar, NavDropdown, Card } from 'react-bootstrap';
 import { AppContext } from "../AppContext";
 
-import { faLanguage } from '@fortawesome/free-solid-svg-icons';
+
+const en = {
+  
+}
+
 
 const Navibar = () => {
   const {module, setModule, language, setLanguage} = useContext(AppContext);

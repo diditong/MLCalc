@@ -16,7 +16,6 @@ const Sidebar = () => {
             <KMengine /> 
             <Datatable />
             <Centerstable />
-            <Colorpicker />
           </div>
         );
       }

@@ -228,11 +228,13 @@ const XYcoord = () => {
     let centerPoints = [];
     let currCenters = null;
     if (currIteration === 0) {
+      console.log("currITERATION IS 0");
       currCenters = centers;
+      console.log("centers are ", centers);
     } else {
       currCenters = results[currIteration-1];
     }
-
+    console.log("currCenters are ", currCenters);
     const polyPoints = [[0,-11.264],[-6.6,9.416],[9.9,-3.784],[-9.9,-3.784],[6.6,9.416]];
     for (var i=0; i<currCenters.length; i++) {
       let points = "";
@@ -245,7 +247,7 @@ const XYcoord = () => {
         let polyPointY = polyPoints[j][1];
         points += (polyPointX+currX)+","+(polyPointY+currY)+" ";
       }
-      centerPoints.push(<polygon points={points} key={'c'+i} fill={colors[i]} fillOpacity="0.5"/>);
+      centerPoints.push(<polygon points={points} key={'c'+i} fill={colors[i]} fillOpacity="0.8"/>);
     } //9.9,12.364
     return (centerPoints);
   }
@@ -267,7 +269,7 @@ const XYcoord = () => {
   let centerPoints = generateCenterPoints();
   let coordsys = <svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
                   <g id='b'>
-                    {grids.concat(centerPoints,dataPoints)}
+                    {grids.concat(dataPoints,centerPoints)}
                   </g>
                 </svg>
   

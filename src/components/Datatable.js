@@ -7,7 +7,7 @@ import {ClusteringContext} from "./ClusteringContext"
 
 const Datatable = () => {
 
-  const {data, dataTableStatus, setDataTableStatus, addPoint, editPoint, deletePoint} 
+  const {data, setData, dataTableStatus, setDataTableStatus, addPoint, editPoint, deletePoint} 
   = useContext(ClusteringContext);
   const [lastFocusId, setLastFocusId] = useState(null);
   const [lastInvalid, setLastInvalid] = useState(null);
@@ -42,69 +42,64 @@ const Datatable = () => {
     } else if (key === keys.delete) {
       event.preventDefault();
       let toDel = (id.slice(0,2) !== 'd0') ? deletePoint('dr'+(id[1]-1)) : null;
-    }
-    
-    else {
-
-    let typeId = id[0];
-    let rowId = id.slice(1, id.length-1);
-    let colId = id[id.length-1];
-    let newId = id;
-    let start = null;
-    let end = null;
-    let newInput = null;
-    let inputLength = (data.length).toString();
-
-    switch (key) {
-      case keys.left:
-        { 
-          if ((colId==='y') && (input.selectionStart==0)) { 
-            newId = typeId + rowId + 'x';
-            newInput = document.getElementById(newId);
-            start = newInput.value.length;
-            end = newInput.value.length;
-        }
-          break;
-        }
-      case keys.right:
-        {
-          if ((colId === 'x') && (input.selectionEnd==input.value.length)) {
-            newId = typeId + rowId + 'y';
-            newInput = document.getElementById(newId);
-            start = 0;
-            end = 0;
+    } else {
+      let typeId = id[0];
+      let rowId = id.slice(1, id.length-1);
+      let colId = id[id.length-1];
+      let newId = id;
+      let start = null;
+      let end = null;
+      let newInput = null;
+      let inputLength = (data.length).toString();
+      switch (key) {
+        case keys.left:
+          { 
+            if ((colId==='y') && (input.selectionStart==0)) { 
+              newId = typeId + rowId + 'x';
+              newInput = document.getElementById(newId);
+              start = newInput.value.length;
+              end = newInput.value.length;
           }
-          break;
-        }
-      case keys.up:
-        {
-          if (rowId !== '0') {
-            newId = typeId + (parseInt(rowId)-1) + colId;
-            newInput = document.getElementById(newId);
-            start = input.selectionStart;
-            end = input.selectionStart;
+            break;
           }
-          break;
-        }
-      case keys.down:
-        {
-          if (rowId !== inputLength) {
-            newId = typeId + (parseInt(rowId)+1) + colId;
-            newInput = document.getElementById(newId);
-            start = input.selectionStart;
-            end = input.selectionStart;
+        case keys.right:
+          {
+            if ((colId === 'x') && (input.selectionEnd==input.value.length)) {
+              newId = typeId + rowId + 'y';
+              newInput = document.getElementById(newId);
+              start = 0;
+              end = 0;
+            }
+            break;
           }
-          break;
-        }
+        case keys.up:
+          {
+            if (rowId !== '0') {
+              newId = typeId + (parseInt(rowId)-1) + colId;
+              newInput = document.getElementById(newId);
+              start = input.selectionStart;
+              end = input.selectionStart;
+            }
+            break;
+          }
+        case keys.down:
+          {
+            if (rowId !== inputLength) {
+              newId = typeId + (parseInt(rowId)+1) + colId;
+              newInput = document.getElementById(newId);
+              start = input.selectionStart;
+              end = input.selectionStart;
+            }
+            break;
+          }
+      }
+      if (newId !== id) {
+        event.preventDefault();
+        newInput.focus();
+        newInput.selectionStart = start;
+        newInput.selectionEnd = end;
+      }
     }
-  
-    if (newId !== id) {
-      event.preventDefault();
-      newInput.focus();
-      newInput.selectionStart = start;
-      newInput.selectionEnd = end;
-    }
-  }
   }
 
   const isNumeric = (value) => {
@@ -163,6 +158,8 @@ const Datatable = () => {
     console.log("addInput: ", id, validX, validY, inputX, inputY);
     if (validX && validY) {
       addPoint(id, inputX, inputY);
+      let firstInput = document.getElementById('d0x');
+      firstInput.focus();
     }
   }
 
@@ -178,16 +175,16 @@ const Datatable = () => {
   }
 
   const uploadData = (files) => {
-    //clearPoints();
     var reader = new FileReader();
     var data = [];
-    reader.onload = function () {
+    reader.onload = () => {
       var lines = reader.result.split("\n");
       var pair = null;
       for (var i=0; i<lines.length; i++) {
         pair = lines[i].split(",");
         data.push([parseFloat(pair[0]),parseFloat(pair[1])]);
       }
+      setData(data);
     };
     reader.readAsText(files[0]);
   }

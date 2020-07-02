@@ -1,12 +1,18 @@
 'use strict'
 
-import React, {useState} from 'react'
+import React, {useState, useContext, useEffect} from 'react'
 import reactCSS from 'reactcss'
-import { CompactPicker } from 'react-color'
+import { TwitterPicker } from 'react-color'
+import {ClusteringContext} from './ClusteringContext'
 
-const Colorpicker = () => {
+export const Colorpicker = (props) => {
+  const {setColors} = useContext(ClusteringContext);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
-  const [color, setColor] = useState("#000000");
+  const [color, setColor] = useState(null);
+
+  useEffect(() => {
+    setColor(props.color);
+  });
 
   const handleClick = () => {
     setDisplayColorPicker(!displayColorPicker);
@@ -18,7 +24,7 @@ const Colorpicker = () => {
 
   const handleChange = (color) => {
     setColor(color.hex);
-    console.log("color is ",color.hex);
+    setColors(props.id, color.hex);
   };
 
   const styles = reactCSS({
@@ -31,7 +37,7 @@ const Colorpicker = () => {
       },
       swatch: {
         padding: '2px',
-        background: '#fff',
+        background: '#ffffff',
         borderRadius: '1px',
         boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
         display: 'inline-block',
@@ -58,7 +64,7 @@ const Colorpicker = () => {
       </div>
       {displayColorPicker ? <div style={styles.popover}>
         <div style={styles.cover} onClick={handleClose}/>
-        <CompactPicker color={color} onChange={handleChange} />
+        <TwitterPicker color={color} onChange={handleChange} />
       </div> : null}
     </div>
   );
