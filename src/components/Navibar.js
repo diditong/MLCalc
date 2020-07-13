@@ -2,15 +2,9 @@ import React, { useContext } from 'react';
 import { Nav, Navbar, NavDropdown, Card } from 'react-bootstrap';
 import { AppContext } from "../AppContext";
 
-
-const en = {
-  
-}
-
-
 const Navibar = () => {
-  const {module, setModule, language, setLanguage} = useContext(AppContext);
-  console.log("Language: ", language);
+  const {module, setModule, language, setLanguage, dictionary} = useContext(AppContext);
+  console.log("Dictionary: ", dictionary);
   return (
     <Navbar className="navi" collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Navbar.Brand href="#home">MLCalc - ML Calculator 0.1.1 (Under Development)</Navbar.Brand>
@@ -35,7 +29,7 @@ const Navibar = () => {
           <NavDropdown title="Language" id="collasible-nav-dropdown">
             <NavDropdown.Item href="#action/3.1" onClick={()=>setLanguage('en')}>English</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.2" onClick={()=>setLanguage('jp')}>日本語</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3" onClick={()=>setLanguage('ch')}>中文</NavDropdown.Item>
+            <NavDropdown.Item href="#action/3.3" onClick={()=>setLanguage('zh')}>中文</NavDropdown.Item>
           </NavDropdown>
           <Nav.Link href="#feedback">Feedback</Nav.Link>
           <Nav.Link href="#help">Help</Nav.Link>

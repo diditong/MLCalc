@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {ClusteringContext} from './ClusteringContext';
 
 const XYcoord = () => {
-  const {data, centers, colors, results, currIteration} = 
+  const {data, centers, colors, groups, results, currIteration, currStep} = 
     useContext(ClusteringContext);
   const [W, setW] = useState(window.innerWidth-Math.floor(window.innerWidth/4));
   const [H, setH] = useState(window.innerHeight-56);
@@ -213,14 +213,37 @@ const XYcoord = () => {
   }
 
   const generateDataPoints = () => {
+    //console.log("from generateDataPoints: ", dataColors);
+    console.log("XYcoord: ", groups);
+    
     let dataPoints = [];
-    for (var i=0; i<data.length; i++) {
-      let x = data[i][0];
-      let y = data[i][1];
-      let currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
-      let currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
-      dataPoints.push(<circle key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill="black" onMouseOver={showCoord}/>);
-    }
+    let x = 0, y = 0, currX = 0, currY = 0;
+    if (currIteration === 0 && currStep === 'initial') {
+      console.log("reached if: ");
+      for (var i=0; i<data.length; i++) {
+        x = data[i][0];
+        y = data[i][1];
+        currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
+        currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
+        dataPoints.push(<circle key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill='black' fillOpacity="0.5" onMouseOver={showCoord}/>);
+      }
+    } else {
+      console.log("reached else: ");
+      let currGroups = groups[currIteration-1];
+      let currData = null;
+      let color = null;
+      console.log (currGroups);
+      for (let i=0; i<currGroups.length; i++) {
+        color = colors[i];
+        currGroups[i].forEach((idx) => {
+          x = data[idx][0];
+          y = data[idx][1];
+          currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
+          currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
+          dataPoints.push(<circle key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill={color} fillOpacity="0.5" onMouseOver={showCoord}/>);
+        });
+      }
+    };
     return (dataPoints);
   }
 
@@ -228,13 +251,10 @@ const XYcoord = () => {
     let centerPoints = [];
     let currCenters = null;
     if (currIteration === 0) {
-      console.log("currITERATION IS 0");
       currCenters = centers;
-      console.log("centers are ", centers);
     } else {
       currCenters = results[currIteration-1];
     }
-    console.log("currCenters are ", currCenters);
     const polyPoints = [[0,-11.264],[-6.6,9.416],[9.9,-3.784],[-9.9,-3.784],[6.6,9.416]];
     for (var i=0; i<currCenters.length; i++) {
       let points = "";
@@ -247,7 +267,7 @@ const XYcoord = () => {
         let polyPointY = polyPoints[j][1];
         points += (polyPointX+currX)+","+(polyPointY+currY)+" ";
       }
-      centerPoints.push(<polygon points={points} key={'c'+i} fill={colors[i]} fillOpacity="0.8"/>);
+      centerPoints.push(<polygon points={points} key={'c'+i} fill={colors[i]} fillOpacity="1.0"/>);
     } //9.9,12.364
     return (centerPoints);
   }

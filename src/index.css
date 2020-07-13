@@ -85,7 +85,6 @@ code {
 .bar ul li {
   background: #E8E8E8;
   border-radius: 10px;
-  position: relative;
   display: block;
   min-width: 40px;
   cursor: pointer;
@@ -107,10 +106,12 @@ code {
   border-radius: 10px;
 }
 .bar ul ul li {
+  position: relative;
   float: none;
   border-right: none;
   border-bottom: 1px solid #D3D3D3;
   border-radius: 0px;
+  z-index: 1;
 }
 .bar ul ul li:first-child {
   border-bottom: none;
@@ -245,6 +246,7 @@ input[type="text"] {
   display: flex;
   float: right;
 }
+
 .tableBtn {
   margin-left: 10px;
   cursor: pointer;

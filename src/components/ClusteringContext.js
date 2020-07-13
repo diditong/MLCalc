@@ -22,16 +22,23 @@ const generateRandomData = () => {
   return randomData;
 };
 
+const generatedataColors = () => {
+  let dataColors = Array.from({length:210}, ()=>'black');
+  return dataColors;
+}
+
 const initialState = {
   data: generateRandomData(),
+  dataColors: generatedataColors(),
   results: [],
   centers: [[2,2],[-2,2],[0,-2]],
   colors: ["#A4DD00","#68CCCA","#FDA1FF"],
+  groups: [],
   dataTableStatus: 'edit',
   centersTableStatus: 'edit',
   currIteration: 0,
-  currStep: 0,
-  finalResult: false,
+  currStep: 'initial',
+  dataProcessed: false
 };
 
 const sameCenters = (centers1, centers2) => {
@@ -132,93 +139,46 @@ const reducer = (state, action) => {
       return {...state, data: action.payload.data};
     }
     case ('SET_CENTERS'): {
-      console.log("reached set centers");
       return {...state, centers: action.payload.centers};
     }
     case ("NEXT_IT"): {
       let currIteration = state.currIteration;
-      let results = state.results;
-      if (state.finalResult && currIteration === results.length) {
-        alert("Reached final result");
-      } else if (state.finalResult && currIteration < results.length) {
-          state.currIteration = currIteration + 1;
+      let maxIteration = state.results.length;
+      if (currIteration < maxIteration) {
+        return {...state, currStep: 'centering' , currIteration: state.currIteration+1};
       } else {
-        let data = state.data;
-        let centers = state.centers;
-        let currCenters = null;
-        if (currIteration === 0) {
-          currCenters = centers;
-        } else {
-          currCenters = results[currIteration-1];
-        }
-        let currDataPoint = null;
-        if (currIteration < results.length) {
-          state.currIteration += 1;
-        } else {
-          let finalResult = false;
-          let newCenters = [];
-          let dictForUpdateResults = {};
-          for (var i=0; i<currCenters.length; i++) {
-            dictForUpdateResults[i] = [];
-          }
-          for (var i=0; i<data.length; i++) {
-            currDataPoint = data[i];
-            let minDistance = Number.MAX_VALUE;
-            let minIndex = 0;
-            let currDistance = null;
-            for (var j=0; j<currCenters.length; j++) {
-              currDistance = Math.pow((currDataPoint[0]-currCenters[j][0]),2)+Math.pow((currDataPoint[1]-currCenters[j][1]),2);
-              if (currDistance < minDistance) {
-                minDistance = currDistance;
-                minIndex = j;
-              }
-            }
-            dictForUpdateResults[minIndex].push([currDataPoint[0], currDataPoint[1]]);
-          }
-          let values = Object.values(dictForUpdateResults);
-          for (var i=0; i<values.length; i++) {
-            let currGroup = values[i];
-            let groupLength = currGroup.length;
-            if (groupLength) {
-              let currPoint = null;
-              let xSum = 0;
-              let ySum = 0;
-              for (var j=0; j<groupLength; j++) {
-                currPoint = currGroup[j];
-                xSum += currPoint[0];
-                ySum += currPoint[1];
-              }
-              newCenters.push([xSum/groupLength, ySum/groupLength]);
-            } else {
-              newCenters.push(currCenters[i]);
-            }
-            if (sameCenters(newCenters, centers) | sameCenters(newCenters, results[results.length-1])) {
-              state.finalResult = true;
-            }
-          }
-
-          if (!finalResult) {
-            let oldResults = [...state.results];
-            state.results = oldResults.concat([newCenters]);
-            state.currIteration += 1;
-          }
-        }
+        alert("reached final iteration");
       }
-      return {...state};
     }
     case ('PREV_IT'): {
       let currIteration = state.currIteration;
       if (currIteration !== 0){
-        return {...state, currIteration: currIteration-1};
+        return {...state, currStep: 'centering' , currIteration: currIteration-1};
       } else {
-        return {...state}
+        return {...state};
       }
     }
     case ('NEXT_STEP'): {
-      
+      let currIteration = state.currIteration;
+      let maxIteration = state.results.length;
+      let currStep = state.currStep;
+      if (currStep === 'grouping') {
+        return {...state, currStep: 'centering'}
+      } else if (currIteration === maxIteration) {
+        alert("reached final step");
+        return {...state};
+      } else {
+        return {...state, currStep: 'grouping', currIteration: state.currIteration+1};
+      }
     }
     case ('PREV_STEP'): {
-      
+      let currIteration = state.currIteration;
+      let currStep = state.currStep;
+      if (currStep === 'centering') {
+        return {...state, currStep: 'grouping'};
+      } else if (currIteration !== 0) {
+        return {...state, currStep: 'centering', currIteration: state.currIteration-1};
+      } 
     }
     case ('SET_COLORS'): {
       let id = action.payload.id;
@@ -226,6 +186,71 @@ const reducer = (state, action) => {
       let newColors = state.colors;
       newColors[id] = newColor;
       return {...state, colors: newColors}
+    }
+    case ("PROC_DATA"): {
+      // Compute the new groups
+      state.currStep = 'grouping';
+      state.currIteration = 1;
+      let currLoop = 0;
+      while (!state.dataProcessed) {
+        let currCenters = (currLoop===0) ? state.centers : state.results[state.results.length-1];
+        let currDataPoint = null;
+        let currDistance = null;
+        let minDistance = Number.MAX_VALUE;
+        let minIndex = 0;
+        let newGroups = [[],[],[]];
+        for (let i=0; i<state.data.length; i++) {
+          currDataPoint = state.data[i];
+          minDistance = Number.MAX_VALUE;
+          minIndex = 0;
+          currDistance = null;
+          for (let j=0; j<currCenters.length; j++) {
+            currDistance = Math.pow((currDataPoint[0]-currCenters[j][0]),2)+Math.pow((currDataPoint[1]-currCenters[j][1]),2);
+            if (currDistance < minDistance) {
+              minDistance = currDistance;
+              minIndex = j;
+            }
+          }
+          newGroups[minIndex].push(i);
+        }
+        state.groups.push(newGroups);
+
+        // Compute the new centers
+        let currData = null;
+        let sumX = 0;
+        let sumY = 0;
+        let newCenters = [];
+        let groupLength = 0;
+        let currGroups = state.groups[state.groups.length-1];
+        currGroups.forEach((group) => {
+          sumX = 0;
+          sumY = 0;
+          groupLength = group.length;
+          group.forEach((idx) => {
+            sumX += state.data[idx][0];
+            sumY += state.data[idx][1];
+          });
+          newCenters.push([sumX/groupLength, sumY/groupLength]);
+        });
+
+
+        // Check if convergence is reached
+        if ((currLoop === 0) && (sameCenters(newCenters, state.centers))) {
+          state.groups = [];
+          currLoop += 1;
+          state.dataProcessed = true;
+        } else if (sameCenters(newCenters, state.results[state.results.length-1])) {
+          state.groups.pop(); //pop the redundant group
+          currLoop += 1;
+          state.dataProcessed = true;
+        } else {
+          state.results.push(newCenters); 
+          currLoop += 1;
+        }
+      }
+      
+     
+      return {...state};
     }
       /*
     case ("CLEAR_POINTS"):
@@ -242,9 +267,11 @@ const reducer = (state, action) => {
 export const ClusteringContext = React.createContext();
 export const ClusteringContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  
 
   const value = {
     data: state.data,
+    dataColors: state.dataColors,
     addPoint: (id, inputX, inputY) => {
       dispatch({type: 'ADD_POINT', payload: {id:id, inputX:inputX, inputY:inputY}})
     },
@@ -261,6 +288,7 @@ export const ClusteringContextProvider = props => {
     results: state.results,
     centers: state.centers,
     colors: state.colors,
+    groups: state.groups,
     setColors: (id, value)=>{
       dispatch({type: 'SET_COLORS', payload: {id:id, value: value}})
     },
@@ -278,9 +306,9 @@ export const ClusteringContextProvider = props => {
       dispatch({type:'SET_CENTERS', payload: centers})
     },
 
-    finalResult: state.finalResult,
-    setFinalResult: value=>{
-      dispatch({type: 'SET_FINALRESULT', payload: value})
+    dataProcessed: state.dataProcessed,
+    setdataProcessed: value=>{
+      dispatch({type: 'SET_dataProcessed', payload: value})
     },
 
     currIteration: state.currIteration,
@@ -297,11 +325,12 @@ export const ClusteringContextProvider = props => {
     },
     accessPrevStep: () =>  {
       dispatch({type: 'PREV_STEP', payload: null})
+    },
+
+    processData: () => {
+      dispatch({type: 'PROC_DATA', payload: null})
     }
   }
-
-
-
 
   return (
     <ClusteringContext.Provider value={value}>
@@ -312,9 +341,9 @@ export const ClusteringContextProvider = props => {
 
 
 /*
-  computeFinalResult () {
-    while (!this.state.finalResult) {
-      this.setState({finalResult: this.computeNextIteration()})
+  computedataProcessed () {
+    while (!this.state.dataProcessed) {
+      this.setState({dataProcessed: this.computeNextIteration()})
     }
   }
   

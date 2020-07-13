@@ -8,16 +8,15 @@ function Calc () {
 	const {calcHeight, setCalcHeight} = useContext(AppContext);
 
 	const columnStyle = {
-    float: 'left',
-    padding: '0px',
-    height: '100%',
-		flex: '1',
+		float: 'left',
+		padding: '0px',
+		height: '100%',
 		height: calcHeight
   }
   
   const leftStyle = {
-    width: '25%',
-    overflow: 'auto',
+		width: '25%',
+		overflow: 'auto',
 		boxShadow: '-6px -5px 5px 5px #333',
   }
 

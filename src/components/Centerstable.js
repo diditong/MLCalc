@@ -18,8 +18,6 @@ const Centerstable = () => {
   const [validX, setValidX] = useState(null);
   const [validY, setValidY] = useState(null);
 
-  console.log("From Centerstable1: ", colors);
-
   const navigateTable = (event) => {
     const arrow = {
       left: 37,
@@ -145,14 +143,12 @@ const Centerstable = () => {
   }
 
   const addInput = (id) => {
-    console.log("From addinput: ", id);
     if (validX && validY) {
       addPoint(id, inputX, inputY);
     }
   }
 
   const downloadCenters = () => {
-    console.log("reached downloadCenters");
     var rawCenters = centers;
     var csvContent = "data:text/csv;charset=utf-8,";
   
@@ -173,7 +169,6 @@ const Centerstable = () => {
         pair = lines[i].split(",");
         centers.push([parseFloat(pair[0]),parseFloat(pair[1])]);
       }
-      console.log("HERE ", centers);
       setCenters(centers);
     };
     reader.readAsText(files[0]);
@@ -243,7 +238,6 @@ const Centerstable = () => {
       );
     }
   } else if (centersTableStatus === "check") {
-      console.log('here we go ',colors[0]);
       statusClass = "checkTable";
       tableButtons.push(<FontAwesomeIcon title="Download centers" className="tableBtn" icon={faDownload} onClick={downloadCenters}/>);
       tableButtons.push(<FontAwesomeIcon title="Edit centers" className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('edit')}/>)
@@ -277,8 +271,6 @@ const Centerstable = () => {
         );
       }
   }
-
-  console.log("From Centerstable: ", colors[i]);
   
   
   return (
