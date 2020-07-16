@@ -194,21 +194,21 @@ const Datatable = () => {
   const points = data;
 
   let statusClass = null;
-  let tableButtons = [];
+  let tableButtons = null;
   let tableBody = [];
   let tableHead = null;
 
-  if (status === "edit") {
+  if (status === "editing") {
     statusClass = "editTable";
     
-    tableButtons.push(
-      <div className="tableToolbar">
+    tableButtons = 
+      <div className="editToolbar">
         <ReactFileReader handleFiles={uploadData} fileTypes={'.csv'}>
           <FontAwesomeIcon title="Upload data" className="tableBtn" icon={faUpload} />
         </ReactFileReader>
-        <FontAwesomeIcon title="Save data" className="tableBtn" icon={faSave} onClick={()=>setDataTableStatus('check')}/>
+        <FontAwesomeIcon title="Save data" className="tableBtn" icon={faSave} onClick={()=>setDataTableStatus('saved')}/>
       </div>
-    );
+
 
     tableHead = 
       <tr>
@@ -220,7 +220,7 @@ const Datatable = () => {
         </th>
       </tr>
     tableBody.push(
-      <tr>
+      <tr key='tri'>
         <td>
           <input id={'d0x'} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
           onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={handlePressKey}/>
@@ -254,10 +254,14 @@ const Datatable = () => {
         </tr>
       );
     }
-  } else if (status === "check") {
-      statusClass = "checkTable";
-      tableButtons.push(<FontAwesomeIcon title="Download data" className="tableBtn" icon={faDownload} onClick={downloadData}/>);
-      tableButtons.push(<FontAwesomeIcon title="Edit data" className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('edit')}/>)
+  } else if (status === "saved") {
+      statusClass = "savedDataTable";
+      tableButtons =       
+      <div className="savedToolbar">
+        <FontAwesomeIcon title="Download data" className="tableBtn" icon={faDownload} onClick={downloadData}/>
+        <FontAwesomeIcon title="Edit centers" className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('editing')}/>
+      </div>
+      
       tableHead = 
       <tr>
         <th className="table-title">{tableTitle}</th>
@@ -266,7 +270,7 @@ const Datatable = () => {
         </th>
       </tr>
       tableBody.push(
-      <tr>
+      <tr key='trt'>
         <td>X</td>
         <td>Y</td>
       </tr>

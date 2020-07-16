@@ -31,11 +31,11 @@ const initialState = {
   data: generateRandomData(),
   dataColors: generatedataColors(),
   results: [],
-  centers: [[2,2],[-2,2],[0,-2]],
-  colors: ["#A4DD00","#68CCCA","#FDA1FF"],
+  centers: [[-6,0],[6,0],[-2,0],[2,0]],
+  colors: ["#9900EF","#A4DD00","#68CCCA","#FDA1FF"],
   groups: [],
-  dataTableStatus: 'edit',
-  centersTableStatus: 'edit',
+  dataTableStatus: 'editing',
+  centersTableStatus: 'editing',
   currIteration: 0,
   currStep: 'initial',
   dataProcessed: false
@@ -122,10 +122,10 @@ const reducer = (state, action) => {
       id = action.payload.id;
       var inputX = parseFloat(action.payload.inputX);
       var inputY = parseFloat(action.payload.inputY);
-      let oldData = [...state.data];
       
       if (id === 'da') {
-        return {...state, data: [[inputX, inputY]].concat(oldData)};
+        return {...state, 
+          data: [[inputX, inputY]].concat(state.data)};
       } else if (id === 'ca') {
         return {...state, 
           centers: [[inputX, inputY]].concat(state.centers),
@@ -142,12 +142,14 @@ const reducer = (state, action) => {
       return {...state, centers: action.payload.centers};
     }
     case ("NEXT_IT"): {
+      console.log("");
       let currIteration = state.currIteration;
       let maxIteration = state.results.length;
-      if (currIteration < maxIteration) {
-        return {...state, currStep: 'centering' , currIteration: state.currIteration+1};
-      } else {
+      if (currIteration === maxIteration-1) {
         alert("reached final iteration");
+        return {...state};
+      } else {
+        return {...state, currStep: 'centering' , currIteration: state.currIteration+1};
       }
     }
     case ('PREV_IT'): {
@@ -155,16 +157,17 @@ const reducer = (state, action) => {
       if (currIteration !== 0){
         return {...state, currStep: 'centering' , currIteration: currIteration-1};
       } else {
-        return {...state};
+        return {...state, currStep: 'grouping', currIteration: 0};
       }
     }
     case ('NEXT_STEP'): {
       let currIteration = state.currIteration;
       let maxIteration = state.results.length;
       let currStep = state.currStep;
+      console.log(currIteration, currStep);
       if (currStep === 'grouping') {
-        return {...state, currStep: 'centering'}
-      } else if (currIteration === maxIteration) {
+        return {...state, currStep: 'centering'};
+      } else if (currStep === 'centering' && currIteration === maxIteration-1) {
         alert("reached final step");
         return {...state};
       } else {
@@ -176,9 +179,11 @@ const reducer = (state, action) => {
       let currStep = state.currStep;
       if (currStep === 'centering') {
         return {...state, currStep: 'grouping'};
-      } else if (currIteration !== 0) {
+      } else if (currIteration === 0) {
+        return {...state};
+      } else {
         return {...state, currStep: 'centering', currIteration: state.currIteration-1};
-      } 
+      }
     }
     case ('SET_COLORS'): {
       let id = action.payload.id;
@@ -190,7 +195,7 @@ const reducer = (state, action) => {
     case ("PROC_DATA"): {
       // Compute the new groups
       state.currStep = 'grouping';
-      state.currIteration = 1;
+      state.currIteration = 0;
       let currLoop = 0;
       while (!state.dataProcessed) {
         let currCenters = (currLoop===0) ? state.centers : state.results[state.results.length-1];
@@ -198,7 +203,10 @@ const reducer = (state, action) => {
         let currDistance = null;
         let minDistance = Number.MAX_VALUE;
         let minIndex = 0;
-        let newGroups = [[],[],[]];
+        let newGroups = [];
+        for (let i=0; i<state.centers.length; i++) {
+          newGroups.push([]);
+        }
         for (let i=0; i<state.data.length; i++) {
           currDataPoint = state.data[i];
           minDistance = Number.MAX_VALUE;
@@ -213,6 +221,7 @@ const reducer = (state, action) => {
           }
           newGroups[minIndex].push(i);
         }
+        console.log(newGroups);
         state.groups.push(newGroups);
 
         // Compute the new centers
@@ -249,7 +258,7 @@ const reducer = (state, action) => {
         }
       }
       
-     
+      console.log(state.results, state.groups);
       return {...state};
     }
       /*
@@ -267,7 +276,6 @@ const reducer = (state, action) => {
 export const ClusteringContext = React.createContext();
 export const ClusteringContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  
 
   const value = {
     data: state.data,
@@ -329,7 +337,7 @@ export const ClusteringContextProvider = props => {
 
     processData: () => {
       dispatch({type: 'PROC_DATA', payload: null})
-    }
+    },
   }
 
   return (

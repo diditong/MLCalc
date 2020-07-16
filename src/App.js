@@ -16,7 +16,6 @@ const App = () => {
         <Calc selected="KM"/>
       </div>
     </AppContextProvider>
-
   );
 }
 

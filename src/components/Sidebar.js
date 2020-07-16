@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import KMengine from './KMengine';
 import Datatable from './Datatable';
 import Centerstable from './Centerstable';
+import ProcessDataButton from './ProcessDataButton';
 import { AppContext } from '../AppContext';
 import Colorpicker from './Colorpicker';
 import {ClusteringContextProvider} from "./ClusteringContext"
@@ -16,6 +17,7 @@ const Sidebar = () => {
             <KMengine /> 
             <Datatable />
             <Centerstable />
+            <ProcessDataButton />
           </div>
         );
       }

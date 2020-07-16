@@ -18,75 +18,83 @@ const Centerstable = () => {
   const [validX, setValidX] = useState(null);
   const [validY, setValidY] = useState(null);
 
-  const navigateTable = (event) => {
-    const arrow = {
+  const handlePressKey = (event) => {
+    const keys = {
       left: 37,
       up: 38,
       right: 39,
-      down: 40
+      down: 40,
+      enter: 13,
+      delete: 46
     };
   
     let input = event.target;
-  
-    let id = event.target.id;
-    let typeId = id[0];
-    let rowId = id.slice(1, id.length-1);
-    let colId = id[id.length-1];
     let key = event.keyCode;
-    let newId = id;
-    let start = null;
-    let end = null;
-    let newInput = null;
-    let inputLength = (centers.length).toString();
-
-    switch (key) {
-      case arrow.left:
-        { 
-          if ((colId==='y') && (input.selectionStart==0)) { 
-            newId = typeId + rowId + 'x';
-            newInput = document.getElementById(newId);
-            start = newInput.value.length;
-            end = newInput.value.length;
-        }
-          break;
-        }
-      case arrow.right:
-        {
-          if ((colId === 'x') && (input.selectionEnd==input.value.length)) {
-            newId = typeId + rowId + 'y';
-            newInput = document.getElementById(newId);
-            start = 0;
-            end = 0;
-          }
-          break;
-        }
-      case arrow.up:
-        {
-          if (rowId !== '0') {
-            newId = typeId + (parseInt(rowId)-1) + colId;
-            newInput = document.getElementById(newId);
-            start = input.selectionStart;
-            end = input.selectionStart;
-          }
-          break;
-        }
-      case arrow.down:
-        {
-          if (rowId !== inputLength) {
-            newId = typeId + (parseInt(rowId)+1) + colId;
-            newInput = document.getElementById(newId);
-            start = input.selectionStart;
-            end = input.selectionStart;
-          }
-          break;
-        }
-    }
-  
-    if (newId !== id) {
+    let id = event.target.id;
+    
+    if (key === keys.enter) {
+      console.log("hit enter");
+      let toAdd = (id.slice(0,2) === 'c0') ? addInput('ca') : null;
+    } else if (key === keys.delete) {
       event.preventDefault();
-      newInput.focus();
-      newInput.selectionStart = start;
-      newInput.selectionEnd = end;
+      let toDel = (id.slice(0,2) !== 'c0') ? deletePoint('cr'+(id[1]-1)) : null;
+    } else {
+      let typeId = id[0];
+      let rowId = id.slice(1, id.length-1);
+      let colId = id[id.length-1];
+      let newId = id;
+      let start = null;
+      let end = null;
+      let newInput = null;
+      let inputLength = (centers.length).toString();
+      switch (key) {
+        case keys.left:
+          { 
+            if ((colId==='y') && (input.selectionStart==0)) { 
+              newId = typeId + rowId + 'x';
+              newInput = document.getElementById(newId);
+              start = newInput.value.length;
+              end = newInput.value.length;
+          }
+            break;
+          }
+        case keys.right:
+          {
+            if ((colId === 'x') && (input.selectionEnd==input.value.length)) {
+              newId = typeId + rowId + 'y';
+              newInput = document.getElementById(newId);
+              start = 0;
+              end = 0;
+            }
+            break;
+          }
+        case keys.up:
+          {
+            if (rowId !== '0') {
+              newId = typeId + (parseInt(rowId)-1) + colId;
+              newInput = document.getElementById(newId);
+              start = input.selectionStart;
+              end = input.selectionStart;
+            }
+            break;
+          }
+        case keys.down:
+          {
+            if (rowId !== inputLength) {
+              newId = typeId + (parseInt(rowId)+1) + colId;
+              newInput = document.getElementById(newId);
+              start = input.selectionStart;
+              end = input.selectionStart;
+            }
+            break;
+          }
+      }
+      if (newId !== id) {
+        event.preventDefault();
+        newInput.focus();
+        newInput.selectionStart = start;
+        newInput.selectionEnd = end;
+      }
     }
   }
 
@@ -178,21 +186,21 @@ const Centerstable = () => {
   const points = centers;
 
   let statusClass = null;
-  let tableButtons = [];
+  let tableButtons = null;
   let tableBody = [];
   let tableHead = null;
 
-  if (centersTableStatus === "edit") {
+  if (centersTableStatus === "editing") {
     statusClass = "editTable";
     
-    tableButtons.push(
-      <div className="tableToolbar">
+    tableButtons = 
+      <div className="editToolbar">
         <ReactFileReader handleFiles={uploadCenters} fileTypes={'.csv'}>
           <FontAwesomeIcon title="Upload centers" className="tableBtn" icon={faUpload} />
         </ReactFileReader>
-        <FontAwesomeIcon title="Save centers" className="tableBtn" icon={faSave} onClick={()=>setCentersTableStatus('check')}/>
+        <FontAwesomeIcon title="Save centers" className="tableBtn" icon={faSave} onClick={()=>setCentersTableStatus('saved')}/>
       </div>
-    );
+
     tableHead = 
       <tr>
         <th colSpan="1" className="table-title">
@@ -203,14 +211,14 @@ const Centerstable = () => {
         </th>
       </tr>
     tableBody.push(
-      <tr>
+      <tr key='tri'>
         <td>
           <input id={'c'+"0x"} name="inputX" className="formInput" autoComplete="off" type="text" placeholder="Enter X" 
-          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
+          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={handlePressKey}/>
         </td>
         <td>
           <input id={'c'+"0y"} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
-          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={navigateTable}/>
+          onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={handlePressKey}/>
         </td>
         <td>
           <FontAwesomeIcon id={'ca'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
@@ -224,12 +232,12 @@ const Centerstable = () => {
           <td>
             <input id={'c'+(i+1)+"x"} className="formInput" autoComplete="off" type="text" value={points[i][0]} 
             onChange={e=>editInput(e.target.id, e.target.value)} 
-            onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
+            onKeyDown={handlePressKey} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
             <input id={'c'+(i+1)+"y"} className="formInput" autoComplete="off" type="text" value={points[i][1]} 
             onChange={e=>editInput(e.target.id, e.target.value)} 
-            onKeyDown={navigateTable} onFocus={initializeValidValue} onBlur={correctLastInput}/>
+            onKeyDown={handlePressKey} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
             <FontAwesomeIcon icon={faMinus} id={'cr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
@@ -237,10 +245,13 @@ const Centerstable = () => {
         </tr>
       );
     }
-  } else if (centersTableStatus === "check") {
-      statusClass = "checkTable";
-      tableButtons.push(<FontAwesomeIcon title="Download centers" className="tableBtn" icon={faDownload} onClick={downloadCenters}/>);
-      tableButtons.push(<FontAwesomeIcon title="Edit centers" className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('edit')}/>)
+  } else if (centersTableStatus === "saved") {
+      statusClass = "savedCentersTable";
+      tableButtons =       
+      <div className="savedToolbar">
+        <FontAwesomeIcon title="Download data" className="tableBtn" icon={faDownload} onClick={downloadCenters}/>
+        <FontAwesomeIcon title="Edit centers" className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('editing')}/>
+      </div>
       tableHead = 
       <tr>
         <th className="table-title">{tableTitle}</th>
@@ -249,7 +260,7 @@ const Centerstable = () => {
         </th>
       </tr>
       tableBody.push(
-      <tr>
+      <tr key='trt'>
         <td>X</td>
         <td>Y</td>
         <td></td>

@@ -18,6 +18,7 @@ function Calc () {
 		width: '25%',
 		overflow: 'auto',
 		boxShadow: '-6px -5px 5px 5px #333',
+		position: 'relative'
   }
 
   const rightStyle = {

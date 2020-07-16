@@ -214,12 +214,10 @@ const XYcoord = () => {
 
   const generateDataPoints = () => {
     //console.log("from generateDataPoints: ", dataColors);
-    console.log("XYcoord: ", groups);
-    
     let dataPoints = [];
     let x = 0, y = 0, currX = 0, currY = 0;
+    let idx = 0;
     if (currIteration === 0 && currStep === 'initial') {
-      console.log("reached if: ");
       for (var i=0; i<data.length; i++) {
         x = data[i][0];
         y = data[i][1];
@@ -228,33 +226,35 @@ const XYcoord = () => {
         dataPoints.push(<circle key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill='black' fillOpacity="0.5" onMouseOver={showCoord}/>);
       }
     } else {
-      console.log("reached else: ");
-      let currGroups = groups[currIteration-1];
-      let currData = null;
-      let color = null;
-      console.log (currGroups);
-      for (let i=0; i<currGroups.length; i++) {
-        color = colors[i];
-        currGroups[i].forEach((idx) => {
-          x = data[idx][0];
-          y = data[idx][1];
-          currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
-          currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
-          dataPoints.push(<circle key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill={color} fillOpacity="0.5" onMouseOver={showCoord}/>);
-        });
-      }
-    };
+        let color = null;
+        let currData = null;
+        let currGroups = groups[currIteration];
+        for (var i=0; i<currGroups.length; i++) {
+          color = colors[i];
+          currGroups[i].forEach(idx => {
+            x = data[idx][0];
+            y = data[idx][1];
+            currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
+            currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
+            dataPoints.push(<circle key={'d'+idx} xy={[x, y]} cx={currX} cy={currY} r="4" fill={color} fillOpacity="0.5" onMouseOver={showCoord}/>);
+          });
+        }
+    }
     return (dataPoints);
-  }
+  };
+
 
   const generateCenterPoints = () => {
     let centerPoints = [];
     let currCenters = null;
-    if (currIteration === 0) {
+    console.log("reached generate center points: ", currIteration, currStep);
+    if (currIteration === 0 && currStep !== 'centering') {
       currCenters = centers;
-    } else {
+    } else if (currStep === 'grouping') {
       currCenters = results[currIteration-1];
-    }
+    } else if (currStep === 'centering') {
+      currCenters = results[currIteration];
+    } 
     const polyPoints = [[0,-11.264],[-6.6,9.416],[9.9,-3.784],[-9.9,-3.784],[6.6,9.416]];
     for (var i=0; i<currCenters.length; i++) {
       let points = "";
