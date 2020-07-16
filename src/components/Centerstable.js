@@ -245,6 +245,16 @@ const Centerstable = () => {
         </tr>
       );
     }
+    for (let i=0; i<Math.max(0, 7-points.length); i++){
+      tableBody.push(
+          <tr style={{lineHeight: '30px'}}>
+              <td style={{background: '#e8e8e8'}}>{'...'}</td>
+              <td style={{background: '#e8e8e8'}}>{'...'}</td>
+              <td> </td>
+          </tr>
+      );
+    }
+
   } else if (centersTableStatus === "saved") {
       statusClass = "savedCentersTable";
       tableButtons =       
@@ -281,19 +291,31 @@ const Centerstable = () => {
           </tr>
         );
       }
+      for (let i=0; i<Math.max(0, 7-points.length); i++){
+        tableBody.push(
+            <tr style={{lineHeight: '30px'}}>
+                <td style={{background: '#e8e8e8'}}>{'...'}</td>
+                <td style={{background: '#e8e8e8'}}>{'...'}</td>
+                <td> </td>
+            </tr>
+        );
+      }
   }
   
   
   return (
-    <div className="table-container" id={'centersTable'}>        
-      <table className={statusClass}>
-        <thead>
-          {tableHead}
-        </thead>
-        <tbody>
-          {tableBody}
-        </tbody>
-      </table>
+    <div className="scrollbar-wrap">
+      <div className="table-container" id={'centersTable'}>        
+        <table className={statusClass}>
+          <thead>
+            {tableHead}
+          </thead>
+          <tbody>
+            {tableBody}
+          </tbody>
+        </table>
+      </div>
+      <div className='cover-bar'></div>
     </div>
   );
 }

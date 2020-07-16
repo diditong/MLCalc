@@ -185,6 +185,9 @@ const reducer = (state, action) => {
         return {...state, currStep: 'centering', currIteration: state.currIteration-1};
       }
     }
+    case ('FINAL_RESULT'): {
+      return {...state, currStep: 'centering', currIteration: state.results.length-1}
+    }
     case ('SET_COLORS'): {
       let id = action.payload.id;
       let newColor = action.payload.value;
@@ -193,7 +196,7 @@ const reducer = (state, action) => {
       return {...state, colors: newColors}
     }
     case ("PROC_DATA"): {
-      // Compute the new groups
+      // show the new groups
       state.currStep = 'grouping';
       state.currIteration = 0;
       let currLoop = 0;
@@ -224,7 +227,7 @@ const reducer = (state, action) => {
         console.log(newGroups);
         state.groups.push(newGroups);
 
-        // Compute the new centers
+        // show the new centers
         let currData = null;
         let sumX = 0;
         let sumY = 0;
@@ -320,24 +323,28 @@ export const ClusteringContextProvider = props => {
     },
 
     currIteration: state.currIteration,
-    computeNextIteration: () => {
+    showNextIteration: () => {
       dispatch({type: 'NEXT_IT', payload: null})
     },
-    accessPrevIteration: () => {
+    showPrevIteration: () => {
       dispatch({type: 'PREV_IT', payload: null})
     },
     
     currStep: state.currStep,
-    computeNextStep: () => {
+    showNextStep: () => {
       dispatch({type: 'NEXT_STEP', payload: null})
     },
-    accessPrevStep: () =>  {
+    showPrevStep: () =>  {
       dispatch({type: 'PREV_STEP', payload: null})
+    },
+    showFinalResult: () =>  {
+      dispatch({type: 'FINAL_RESULT', payload: null})
     },
 
     processData: () => {
       dispatch({type: 'PROC_DATA', payload: null})
     },
+    
   }
 
   return (
@@ -349,9 +356,9 @@ export const ClusteringContextProvider = props => {
 
 
 /*
-  computedataProcessed () {
+  showdataProcessed () {
     while (!this.state.dataProcessed) {
-      this.setState({dataProcessed: this.computeNextIteration()})
+      this.setState({dataProcessed: this.showNextIteration()})
     }
   }
   

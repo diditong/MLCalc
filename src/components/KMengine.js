@@ -6,7 +6,7 @@ import {ClusteringContext} from './ClusteringContext';
 
 const KMengine = () => {
 
-  const {computeNextStep, accessPrevStep, computeNextIteration, accessPrevIteration, processData} = useContext(ClusteringContext);
+  const {showNextStep, showPrevStep, showNextIteration, showPrevIteration, showFinalResult} = useContext(ClusteringContext);
   
   return (
     <div className="outer-menu">
@@ -18,19 +18,19 @@ const KMengine = () => {
           <li title="Autoplay" data-title="Autoplay"> 
             <FontAwesomeIcon icon={faPlay} />
           </li>
-          <li title="Prev. Step" data-title="Prev. Step" onClick={accessPrevStep}>
+          <li title="Prev. Step" data-title="Prev. Step" onClick={showPrevStep}>
             <FontAwesomeIcon icon={faStepBackward}/>
           </li>
-          <li title="Next Step" data-title="Next Step" onClick={computeNextStep}> 
+          <li title="Next Step" data-title="Next Step" onClick={showNextStep}> 
             <FontAwesomeIcon icon={faStepForward}/>
           </li>
-          <li title="Prev. Iter." data-title="Prev. Iter." onClick={accessPrevIteration}>
+          <li title="Prev. Iter." data-title="Prev. Iter." onClick={showPrevIteration}>
             <FontAwesomeIcon icon={faFastBackward}/>
           </li>
-          <li title="Next Iter." data-title="Next Iter." onClick={computeNextIteration}>
+          <li title="Next Iter." data-title="Next Iter." onClick={showNextIteration}>
             <FontAwesomeIcon icon={faFastForward} />
           </li>
-          <li title="Final Result" data-title="Final Result" onClick={processData}>
+          <li title="Final Result" data-title="Final Result" onClick={showFinalResult}>
             <FontAwesomeIcon icon={faKey} />
           </li>
           <li title="View" data-title="View">

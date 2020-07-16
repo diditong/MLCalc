@@ -290,15 +290,18 @@ const Datatable = () => {
   }
 
   return (
-    <div className="table-container" id={'dataTable'}>        
-      <table className={statusClass}>
-        <thead>
-          {tableHead}
-        </thead>
-        <tbody>
-          {tableBody}
-        </tbody>
-      </table>
+    <div className="scrollbar-wrap">
+      <div className="table-container" id={'dataTable'}>        
+        <table className={statusClass}>
+          <thead>
+            {tableHead}
+          </thead>
+          <tbody>
+            {tableBody}
+          </tbody>
+        </table>
+      </div>
+      <div className='cover-bar'></div>
     </div>
   );
 }

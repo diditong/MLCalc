@@ -4,7 +4,7 @@ import {AppContext} from '../AppContext';
 
 
 const ProcessDataButton = () => {
-    const {dataTableStatus, centersTableStatus} = useContext(ClusteringContext);
+    const {dataTableStatus, centersTableStatus, processData} = useContext(ClusteringContext);
     
     const showEffect = () => {
         console.log(dataTableStatus, centersTableStatus);
@@ -15,7 +15,7 @@ const ProcessDataButton = () => {
         } else if (dataTableStatus === 'saved' && centersTableStatus === 'editing') {
             alert('Table 2 not saved');
         } else if (dataTableStatus === 'saved' && centersTableStatus === 'saved') {
-            alert('Both tables saved'); 
+            processData(); 
         }
     }
 
