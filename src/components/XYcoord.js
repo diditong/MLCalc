@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {ClusteringContext} from './ClusteringContext';
 
 const XYcoord = () => {
-  const {data, centers, colors, groups, results, currIteration, currStep} = 
+  const {data, centers, colors, groups, results, currIteration, currStep, boundaryState} = 
     useContext(ClusteringContext);
   const [W, setW] = useState(window.innerWidth-Math.floor(window.innerWidth/4));
   const [H, setH] = useState(window.innerHeight-56);
@@ -121,9 +121,9 @@ const XYcoord = () => {
     setCentery(cy);
   }
   
-  const showCoord = (evt) => {
+  const getCoords = (evt) => {
     let coord = evt.target.attributes.getNamedItem('xy').value;
-    coord = "(" + coord + ")";
+    return "data point: (" + coord + ")";
   }
 
   const generateGrids = () => {
@@ -223,7 +223,9 @@ const XYcoord = () => {
         y = data[i][1];
         currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
         currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
-        dataPoints.push(<circle key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill='black' fillOpacity="0.5" onMouseOver={showCoord}/>);
+        dataPoints.push(<circle className='dataPoint' key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill='black' fillOpacity="0.5">
+                          <title> {'data point: ('+x.toFixed(3)+','+y.toFixed(3)+')'} </title>
+                        </circle>);
       }
     } else {
         let color = null;
@@ -236,7 +238,9 @@ const XYcoord = () => {
             y = data[idx][1];
             currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
             currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
-            dataPoints.push(<circle key={'d'+idx} xy={[x, y]} cx={currX} cy={currY} r="4" fill={color} fillOpacity="0.5" onMouseOver={showCoord}/>);
+            dataPoints.push(<circle className='dataPoint' key={'d'+idx} cx={currX} cy={currY} r="4" fill={color} fillOpacity="0.5">
+                              <title> {'data point: ('+x.toFixed(3)+','+y.toFixed(3)+')'} </title>
+                            </circle>);
           });
         }
     }
@@ -267,12 +271,21 @@ const XYcoord = () => {
         let polyPointY = polyPoints[j][1];
         points += (polyPointX+currX)+","+(polyPointY+currY)+" ";
       }
-      centerPoints.push(<polygon points={points} key={'c'+i} fill={colors[i]} fillOpacity="1.0"/>);
+      centerPoints.push(<polygon className='centerPoint' points={points} key={'c'+i} fill={colors[i]} fillOpacity="1.0">
+                          <title> {'cluster center: ('+x.toFixed(3)+','+y.toFixed(3)+')'} </title>
+                        </polygon>);
     } //9.9,12.364
     return (centerPoints);
   }
 
-
+  const generateBoundaries = () => {
+    console.log("reached generateBoundaries");
+    let boundaries = [];
+    boundaries.push(
+      //<line x1="0" y1="0" x2="200" y2="200" style={{stroke:'black', strokeWidth:'1'}} />
+    );
+    return boundaries;
+  }
 
   useEffect(() => {
     function handleResize() {
@@ -287,13 +300,18 @@ const XYcoord = () => {
   let grids = generateGrids();
   let dataPoints = generateDataPoints();
   let centerPoints = generateCenterPoints();
-  let coordsys = <svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
-                  <g id='b'>
-                    {grids.concat(dataPoints,centerPoints)}
-                  </g>
-                </svg>
+  let coordsys = grids.concat(dataPoints,centerPoints);
   
-  return (coordsys);
+  if (boundaryState) {
+    let boundaries = generateBoundaries();
+    coordsys = coordsys.concat(boundaries);
+  }
+  
+  return  (<svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
+            <g id='b'>
+              {coordsys}
+            </g>
+          </svg>);
 }
 // Must export!
 export default XYcoord;

@@ -53,6 +53,7 @@ code {
   width: 100%;
   height: 100%;
 }
+
 .Sidebar {
   height: 100%;
 }
@@ -405,6 +406,19 @@ textarea:focus, input:focus{
   background-color: #808080;
 }
 
+
+.dataPoint:hover {
+  cursor: pointer;
+  r: 5;
+}
+.centerPoint:hover {
+  cursor: pointer;
+}
+
+input[type="text"][title] {
+  font-style: italic;
+  color:green;
+}
 
 /* Toolbar button title*/
 

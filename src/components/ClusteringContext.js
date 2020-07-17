@@ -4,17 +4,17 @@ const generateRandomData = () => {
   let randomData = [];
   let r = null;
   let t = null;
-  for (var i=0; i<60; i++) {
+  for (var i=0; i<600; i++) {
     r = Math.random()*5;
     t = Math.random()*360;
     randomData.push([r*Math.cos(t)+4, r*Math.sin(t)+4]);
   }
-  for (var i=0; i<50; i++) {
+  for (var i=0; i<500; i++) {
     r = Math.random()*5;
     t = Math.random()*360;
     randomData.push([r*Math.cos(t)-4, r*Math.sin(t)+4]);
   }
-  for (var i=0; i<50; i++) {
+  for (var i=0; i<500; i++) {
     r = Math.random()*5;
     t = Math.random()*360;
     randomData.push([r*Math.cos(t), r*Math.sin(t)-4]);
@@ -31,14 +31,15 @@ const initialState = {
   data: generateRandomData(),
   dataColors: generatedataColors(),
   results: [],
-  centers: [[-6,0],[6,0],[-2,0],[2,0]],
+  centers: [[-2,0],[2,0],[0,0],[0,8]],
   colors: ["#9900EF","#A4DD00","#68CCCA","#FDA1FF"],
   groups: [],
   dataTableStatus: 'editing',
   centersTableStatus: 'editing',
   currIteration: 0,
   currStep: 'initial',
-  dataProcessed: false
+  dataProcessed: false,
+  boundaryState: true
 };
 
 const sameCenters = (centers1, centers2) => {
@@ -185,6 +186,9 @@ const reducer = (state, action) => {
         return {...state, currStep: 'centering', currIteration: state.currIteration-1};
       }
     }
+    case ('INIT_COND'): {
+      return {...state, currStep: 'grouping', currIteration: 0}
+    }
     case ('FINAL_RESULT'): {
       return {...state, currStep: 'centering', currIteration: state.results.length-1}
     }
@@ -264,6 +268,10 @@ const reducer = (state, action) => {
       console.log(state.results, state.groups);
       return {...state};
     }
+    case ("SET_BDRY"): {
+      const newState = (state.boundaryState) ? false : true;
+      return {...state, boundaryState: newState};
+    }
       /*
     case ("CLEAR_POINTS"):
       
@@ -337,6 +345,9 @@ export const ClusteringContextProvider = props => {
     showPrevStep: () =>  {
       dispatch({type: 'PREV_STEP', payload: null})
     },
+    showInitialCondition: () =>  {
+      dispatch({type: 'INIT_COND', payload: null})
+    },
     showFinalResult: () =>  {
       dispatch({type: 'FINAL_RESULT', payload: null})
     },
@@ -344,7 +355,11 @@ export const ClusteringContextProvider = props => {
     processData: () => {
       dispatch({type: 'PROC_DATA', payload: null})
     },
-    
+
+    boundaryState: state.boundaryState,
+    setBoundaryState: () => {
+      dispatch({type: 'SET_BDRY', payload: null})
+    }
   }
 
   return (
