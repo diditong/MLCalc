@@ -4,6 +4,8 @@ import { faSave, faUpload, faDownload, faEdit, faMinus, faPlus } from '@fortawes
 import FileSaver from 'file-saver';
 import ReactFileReader from 'react-file-reader';
 import {ClusteringContext} from "./ClusteringContext"
+import { Tooltip } from '@material-ui/core';
+
 
 const Datatable = () => {
 
@@ -198,10 +200,18 @@ const Datatable = () => {
     
     tableButtons = 
       <div className="editToolbar">
-        <ReactFileReader handleFiles={uploadData} fileTypes={'.csv'}>
-          <FontAwesomeIcon title="Upload data" className="tableBtn" icon={faUpload} />
-        </ReactFileReader>
-        <FontAwesomeIcon title="Save data" className="tableBtn" icon={faSave} onClick={()=>setDataTableStatus('saved')}/>
+        <Tooltip title="Upload data">
+          <div>
+            <ReactFileReader handleFiles={uploadData} fileTypes={'.csv'}>
+              <FontAwesomeIcon className="tableBtn" icon={faUpload} />
+            </ReactFileReader>
+          </div>
+        </Tooltip>
+        <Tooltip title="Save data">
+          <div>
+            <FontAwesomeIcon className="tableBtn" icon={faSave} onClick={()=>setDataTableStatus('saved')}/>
+          </div>
+        </Tooltip> 
       </div>
 
 
@@ -224,9 +234,11 @@ const Datatable = () => {
           <input id={'d0y'} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
           onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={handlePressKey}/>
         </td>
-        <td>
-          <FontAwesomeIcon id={'da'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
-        </td>
+        <Tooltip title="Add point" placement="right">
+          <td>
+            <FontAwesomeIcon id={'da'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
+          </td>
+        </Tooltip>
       </tr>
     )
     
@@ -243,9 +255,11 @@ const Datatable = () => {
             onChange={e=>editInput(e.target.id, e.target.value)} 
             onKeyDown={handlePressKey} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
-          <td>
-            <FontAwesomeIcon icon={faMinus} id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
-          </td>
+          <Tooltip title="Delete point" placement="right">
+            <td>
+              <FontAwesomeIcon icon={faMinus} id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
+            </td>
+          </Tooltip>
         </tr>
       );
     }
@@ -253,8 +267,16 @@ const Datatable = () => {
       statusClass = "savedDataTable";
       tableButtons =       
       <div className="savedToolbar">
-        <FontAwesomeIcon title="Download data" className="tableBtn" icon={faDownload} onClick={downloadData}/>
-        <FontAwesomeIcon title="Edit centers" className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('editing')}/>
+        <Tooltip title="Download data">
+          <span>
+            <FontAwesomeIcon className="tableBtn" icon={faDownload} onClick={downloadData}/>
+          </span>
+        </Tooltip>
+        <Tooltip title="Edit Data">
+          <span>
+            <FontAwesomeIcon className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('editing')}/>
+          </span>
+        </Tooltip>
       </div>
       
       tableHead = 

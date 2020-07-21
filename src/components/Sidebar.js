@@ -6,6 +6,8 @@ import ProcessDataButton from './ProcessDataButton';
 import { AppContext } from '../AppContext';
 import Colorpicker from './Colorpicker';
 import {ClusteringContextProvider} from "./ClusteringContext"
+import { Tooltip, Button } from '@material-ui/core';
+
 
 const Sidebar = () => {
   const {module, setModule} = useContext(AppContext);
