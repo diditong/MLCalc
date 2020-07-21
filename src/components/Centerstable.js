@@ -8,7 +8,7 @@ import Colorpicker from './Colorpicker';
 
 
 const Centerstable = () => {
-  const {colors, centers, setCenters, centersTableStatus, setCentersTableStatus, addPoint, editPoint, deletePoint} 
+  const {colors, centers, results, setCenters, centersTableStatus, setCentersTableStatus, addPoint, editPoint, deletePoint, currIteration, currStep} 
     = useContext(ClusteringContext);
   const [lastFocusId, setLastFocusId] = useState(null);
   const [lastInvalid, setLastInvalid] = useState(null);
@@ -183,7 +183,14 @@ const Centerstable = () => {
   }
 
   const tableTitle = "Centers Points";
-  const points = centers;
+  var points;
+  if (currIteration === 0 && currStep !== 'centering') {
+    points = centers;
+  } else if (currStep === 'grouping') {
+    points = results[currIteration-1];
+  } else if (currStep === 'centering') {
+    points = results[currIteration];
+  } 
 
   let statusClass = null;
   let tableButtons = null;
@@ -247,7 +254,7 @@ const Centerstable = () => {
     }
     for (let i=0; i<Math.max(0, 7-points.length); i++){
       tableBody.push(
-          <tr style={{lineHeight: '30px'}}>
+          <tr key={'tre'+i} style={{lineHeight: '30px'}}>
               <td style={{background: '#e8e8e8'}}>{'...'}</td>
               <td style={{background: '#e8e8e8'}}>{'...'}</td>
               <td> </td>

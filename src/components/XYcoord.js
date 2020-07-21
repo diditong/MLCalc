@@ -251,7 +251,7 @@ const XYcoord = () => {
   const generateCenterPoints = () => {
     let centerPoints = [];
     let currCenters = null;
-    console.log("reached generate center points: ", currIteration, currStep);
+    //console.log("reached generate center points: ", currIteration, currStep);
     if (currIteration === 0 && currStep !== 'centering') {
       currCenters = centers;
     } else if (currStep === 'grouping') {
@@ -279,7 +279,7 @@ const XYcoord = () => {
   }
 
   const generateBoundaries = () => {
-    console.log("reached generateBoundaries");
+    //console.log("reached generateBoundaries");
     let boundaries = [];
     boundaries.push(
       //<line x1="0" y1="0" x2="200" y2="200" style={{stroke:'black', strokeWidth:'1'}} />

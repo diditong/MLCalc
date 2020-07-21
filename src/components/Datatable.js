@@ -17,11 +17,6 @@ const Datatable = () => {
   const [validX, setValidX] = useState(null);
   const [validY, setValidY] = useState(null);
 
-  const navigateTable = (key) => {
-
-  }
-
-
   const handlePressKey = (event) => {
     const keys = {
       left: 37,

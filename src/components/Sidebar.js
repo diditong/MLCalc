@@ -17,7 +17,6 @@ const Sidebar = () => {
             <KMengine /> 
             <Datatable />
             <Centerstable />
-            <ProcessDataButton />
           </div>
         );
       }
