@@ -200,30 +200,27 @@ const Datatable = () => {
     
     tableButtons = 
       <div className="editToolbar">
-        <Tooltip title="Upload data">
-          <div>
-            <ReactFileReader handleFiles={uploadData} fileTypes={'.csv'}>
-              <FontAwesomeIcon className="tableBtn" icon={faUpload} />
-            </ReactFileReader>
-          </div>
-        </Tooltip>
-        <Tooltip title="Save data">
-          <div>
-            <FontAwesomeIcon className="tableBtn" icon={faSave} onClick={()=>setDataTableStatus('saved')}/>
-          </div>
-        </Tooltip> 
+        <div>
+          <ReactFileReader handleFiles={uploadData} fileTypes={'.csv'}>
+            <button className="tableBtn">
+              Upload
+            </button>
+          </ReactFileReader>
+        </div>
+        <button className="tableBtn" icon={faSave} onClick={()=>setDataTableStatus('saved')}>
+          Save
+        </button>
       </div>
 
-
-    tableHead = 
-      <tr>
-        <th colSpan="1" className="table-title">
-          {tableTitle}
-        </th>
-        <th colSpan="2" className="special">
-          {tableButtons}
-        </th>
-      </tr>
+    tableHead =
+      <div className="table-toolbar">
+        <div className="table-title">
+            {tableTitle}
+        </div>
+        <div className="table-buttons">
+            {tableButtons}
+        </div>
+      </div>
     tableBody.push(
       <tr key='tri'>
         <td>
@@ -234,11 +231,11 @@ const Datatable = () => {
           <input id={'d0y'} name="inputY" className="formInput" autoComplete="off" type="text" placeholder="Enter Y" 
           onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={handlePressKey}/>
         </td>
-        <Tooltip title="Add point" placement="right">
-          <td>
-            <FontAwesomeIcon id={'da'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
-          </td>
-        </Tooltip>
+        <td>
+          <button id={'da'} className="addBtn" onClick={e=>addInput(e.target.id)}>
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </td>
       </tr>
     )
     
@@ -255,11 +252,11 @@ const Datatable = () => {
             onChange={e=>editInput(e.target.id, e.target.value)} 
             onKeyDown={handlePressKey} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
-          <Tooltip title="Delete point" placement="right">
-            <td>
-              <FontAwesomeIcon icon={faMinus} id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
-            </td>
-          </Tooltip>
+          <td>
+            <button id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}> 
+              <FontAwesomeIcon icon={faMinus} />
+            </button>
+          </td>
         </tr>
       );
     }
@@ -267,25 +264,14 @@ const Datatable = () => {
       statusClass = "savedDataTable";
       tableButtons =       
       <div className="savedToolbar">
-        <Tooltip title="Download data">
-          <span>
-            <FontAwesomeIcon className="tableBtn" icon={faDownload} onClick={downloadData}/>
-          </span>
-        </Tooltip>
-        <Tooltip title="Edit Data">
-          <span>
-            <FontAwesomeIcon className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('editing')}/>
-          </span>
-        </Tooltip>
+        <button className="tableBtn" icon={faDownload} onClick={downloadData}>
+          Download
+        </button>
+        <button className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('editing')}>
+          Edit
+        </button>
       </div>
       
-      tableHead = 
-      <tr>
-        <th className="table-title">{tableTitle}</th>
-        <th>
-          {tableButtons}
-        </th>
-      </tr>
       tableBody.push(
       <tr key='trt'>
         <td>X</td>
@@ -309,14 +295,21 @@ const Datatable = () => {
   return (
     <div className="scrollbar-wrap">
       <div className="table-container" id={'dataTable'}>        
-        <table className={statusClass}>
-          <thead>
-            {tableHead}
-          </thead>
-          <tbody>
-            {tableBody}
-          </tbody>
-        </table>
+        <div className="table-toolbar">
+          <div className="table-title">
+              {tableTitle}
+          </div>
+          <div className="table-buttons">
+              {tableButtons}
+          </div>
+        </div>
+        <div className="table-body">
+          <table className={statusClass}>
+            <tbody>
+              {tableBody}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className='cover-bar'></div>
     </div>

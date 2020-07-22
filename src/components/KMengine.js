@@ -21,14 +21,13 @@ const KMengine = () => {
       console.log("data already processed");
     } else {
       if (dataTableStatus === 'editing' && centersTableStatus === 'editing') {
-        alert('Both not saved');
-        
+          alert('Both not saved');
       } else if (dataTableStatus === 'editing' && centersTableStatus === 'saved') {
           alert('Table 1 not saved');
       } else if (dataTableStatus === 'saved' && centersTableStatus === 'editing') {
           alert('Table 2 not saved');
       } else if (dataTableStatus === 'saved' && centersTableStatus === 'saved') {  
-        processData(); 
+          processData();
       }
     }
   }
@@ -49,6 +48,7 @@ const KMengine = () => {
           showPrevStep();
         }
         case '5': {
+          console.log("Reached show next step");
           showNextStep();
         }
         case '6': {

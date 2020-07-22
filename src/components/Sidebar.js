@@ -6,7 +6,7 @@ import ProcessDataButton from './ProcessDataButton';
 import { AppContext } from '../AppContext';
 import Colorpicker from './Colorpicker';
 import {ClusteringContextProvider} from "./ClusteringContext"
-import { Tooltip, Button } from '@material-ui/core';
+import { Tooltip, Button, Divider } from '@material-ui/core';
 
 
 const Sidebar = () => {
@@ -18,6 +18,7 @@ const Sidebar = () => {
           <div>
             <KMengine /> 
             <Datatable />
+            <Divider style={{minWidth: '370px'}}/>
             <Centerstable />
           </div>
         );

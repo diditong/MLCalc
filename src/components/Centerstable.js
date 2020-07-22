@@ -247,7 +247,9 @@ const Centerstable = () => {
             onKeyDown={handlePressKey} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
-            <FontAwesomeIcon icon={faMinus} id={'cr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}/>
+            <button id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}> 
+              <FontAwesomeIcon icon={faMinus} />
+            </button>
           </td>
         </tr>
       );

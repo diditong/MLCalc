@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {ClusteringContext} from './ClusteringContext';
+import { Tooltip } from '@material-ui/core';
 
 const XYcoord = () => {
   const {data, centers, colors, groups, results, currIteration, currStep, boundaryState} = 
@@ -223,9 +224,12 @@ const XYcoord = () => {
         y = data[i][1];
         currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
         currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
-        dataPoints.push(<circle className='dataPoint' key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill='black' fillOpacity="0.5">
-                          <title> {'data point: ('+x.toFixed(3)+','+y.toFixed(3)+')'} </title>
-                        </circle>);
+        dataPoints.push(
+          <Tooltip title= {'data point: ('+x.toFixed(3)+','+y.toFixed(3)+')'}>
+            <circle className='dataPoint' key={'d'+i} xy={[x, y]} cx={currX} cy={currY} r="4" fill='black' fillOpacity="0.5">
+            </circle>
+          </Tooltip>
+        );
       }
     } else {
         let color = null;
@@ -238,9 +242,12 @@ const XYcoord = () => {
             y = data[idx][1];
             currX = x*(gs*ns)/(co*Math.pow(10,exp))+cx;
             currY = cy-y*(gs*ns)/(co*Math.pow(10,exp));
-            dataPoints.push(<circle className='dataPoint' key={'d'+idx} cx={currX} cy={currY} r="4" fill={color} fillOpacity="0.5">
-                              <title> {'data point: ('+x.toFixed(3)+','+y.toFixed(3)+')'} </title>
-                            </circle>);
+            dataPoints.push(
+              <Tooltip title= {'data point: ('+x.toFixed(3)+','+y.toFixed(3)+')'}>
+                <circle className='dataPoint' key={'d'+idx} cx={currX} cy={currY} r="4" fill={color} fillOpacity="0.5">
+                </circle>
+              </Tooltip>
+            );
           });
         }
     }
@@ -271,9 +278,12 @@ const XYcoord = () => {
         let polyPointY = polyPoints[j][1];
         points += (polyPointX+currX)+","+(polyPointY+currY)+" ";
       }
-      centerPoints.push(<polygon className='centerPoint' points={points} key={'c'+i} fill={colors[i]} fillOpacity="1.0">
-                          <title> {'cluster center: ('+x.toFixed(3)+','+y.toFixed(3)+')'} </title>
-                        </polygon>);
+      centerPoints.push(
+        <Tooltip title={'cluster center: ('+x.toFixed(3)+','+y.toFixed(3)+')'}>
+          <polygon className='centerPoint' points={points} key={'c'+i} fill={colors[i]} fillOpacity="1.0">
+          </polygon>
+        </Tooltip>
+      );
     } //9.9,12.364
     return (centerPoints);
   }
