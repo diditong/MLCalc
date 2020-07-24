@@ -7,17 +7,17 @@ const generateRandomData = () => {
   for (var i=0; i<60; i++) {
     r = Math.random()*5;
     t = Math.random()*360;
-    randomData.push([r*Math.cos(t)+4, r*Math.sin(t)+4]);
+    randomData.push([r*Math.cos(t)+3, r*Math.sin(t)+3]);
   }
   for (var i=0; i<50; i++) {
     r = Math.random()*5;
     t = Math.random()*360;
-    randomData.push([r*Math.cos(t)-4, r*Math.sin(t)+4]);
+    randomData.push([r*Math.cos(t)-3, r*Math.sin(t)+3]);
   }
   for (var i=0; i<100; i++) {
     r = Math.random()*5;
     t = Math.random()*360;
-    randomData.push([r*Math.cos(t), r*Math.sin(t)-4]);
+    randomData.push([r*Math.cos(t), r*Math.sin(t)-3]);
   }
   return randomData;
 };

@@ -202,21 +202,28 @@ const Centerstable = () => {
     
     tableButtons = 
       <div className="editToolbar">
-        <ReactFileReader handleFiles={uploadCenters} fileTypes={'.csv'}>
-          <FontAwesomeIcon title="Upload centers" className="tableBtn" icon={faUpload} />
-        </ReactFileReader>
-        <FontAwesomeIcon title="Save centers" className="tableBtn" icon={faSave} onClick={()=>setCentersTableStatus('saved')}/>
+        <div>
+          <ReactFileReader handleFiles={uploadCenters} fileTypes={'.csv'}>
+            <button className="tableBtn">
+              Upload
+            </button>
+          </ReactFileReader>
+        </div>
+        <button className="tableBtn" icon={faSave} onClick={()=>setCentersTableStatus('saved')}>
+          Save
+        </button>
       </div>
 
     tableHead = 
-      <tr>
-        <th colSpan="1" className="table-title">
-          {tableTitle}
-        </th>
-        <th colSpan="2" className="special">
-          {tableButtons}
-        </th>
-      </tr>
+      <div className="table-toolbar">
+        <div className="table-title">
+            {tableTitle}
+        </div>
+        <div className="table-buttons">
+            {tableButtons}
+        </div>
+      </div>
+
     tableBody.push(
       <tr key='tri'>
         <td>
@@ -228,7 +235,9 @@ const Centerstable = () => {
           onChange={e=>editInput(e.target.id, e.target.value)} onKeyDown={handlePressKey}/>
         </td>
         <td>
-          <FontAwesomeIcon id={'ca'} icon={faPlus} className="addBtn" onClick={e=>addInput(e.target.id)}/>
+          <button id={'ca'} className="addBtn" onClick={e=>addInput(e.target.id)}>
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
         </td>
       </tr>
     )
@@ -247,7 +256,7 @@ const Centerstable = () => {
             onKeyDown={handlePressKey} onFocus={initializeValidValue} onBlur={correctLastInput}/>
           </td>
           <td>
-            <button id={'dr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}> 
+            <button id={'cr'+i} className="delBtn" onClick={e=>deletePoint(e.target.id)}> 
               <FontAwesomeIcon icon={faMinus} />
             </button>
           </td>
@@ -267,17 +276,14 @@ const Centerstable = () => {
   } else if (centersTableStatus === "saved") {
       statusClass = "savedCentersTable";
       tableButtons =       
-      <div className="savedToolbar">
-        <FontAwesomeIcon title="Download data" className="tableBtn" icon={faDownload} onClick={downloadCenters}/>
-        <FontAwesomeIcon title="Edit centers" className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('editing')}/>
-      </div>
-      tableHead = 
-      <tr>
-        <th className="table-title">{tableTitle}</th>
-        <th colSpan="2">
-          {tableButtons}
-        </th>
-      </tr>
+        <div className="savedToolbar">
+          <button className="tableBtn" icon={faDownload} onClick={downloadCenters}>
+            Download
+          </button>
+          <button className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('editing')}>
+            Edit
+          </button>
+        </div>
       tableBody.push(
       <tr key='trt'>
         <td>X</td>
@@ -295,7 +301,7 @@ const Centerstable = () => {
               {points[i][1].toFixed(10)}
             </td>
             <td>
-              <Colorpicker id={i} color={colors[i]}/>
+              <Colorpicker style={{position: 'relative', zIndex:10}} id={i} color={colors[i]}/>
             </td>
           </tr>
         );
@@ -315,14 +321,21 @@ const Centerstable = () => {
   return (
     <div className="scrollbar-wrap">
       <div className="table-container" id={'centersTable'}>        
-        <table className={statusClass}>
-          <thead>
-            {tableHead}
-          </thead>
-          <tbody>
-            {tableBody}
-          </tbody>
-        </table>
+        <div className="table-toolbar">
+          <div className="table-title">
+              {tableTitle}
+          </div>
+          <div className="table-buttons">
+              {tableButtons}
+          </div>
+        </div>
+        <div className="table-body">
+          <table className={statusClass}>
+            <tbody>
+              {tableBody}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className='cover-bar'></div>
     </div>

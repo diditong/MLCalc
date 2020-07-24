@@ -2,7 +2,8 @@
 
 import React, {useState, useContext, useEffect} from 'react'
 import reactCSS from 'reactcss'
-import { TwitterPicker } from 'react-color'
+import { Dialog } from '@material-ui/core';
+import { ChromePicker } from 'react-color'
 import {ClusteringContext} from './ClusteringContext'
 
 export const Colorpicker = (props) => {
@@ -58,15 +59,15 @@ export const Colorpicker = (props) => {
   });
 
   return (
-    <div>
-      <div style={styles.swatch} onClick={handleClick}>
+    <span>
+      <span style={styles.swatch} onClick={handleClick}>
         <div style={styles.color} />
-      </div>
+      </span>
       {displayColorPicker ? <div style={styles.popover}>
         <div style={styles.cover} onClick={handleClose}/>
-        <TwitterPicker color={color} onChange={handleChange} />
+        <ChromePicker color={color} onChange={handleChange} />
       </div> : null}
-    </div>
+    </span>
   );
 }
 
