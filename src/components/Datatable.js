@@ -9,7 +9,7 @@ import { Tooltip } from '@material-ui/core';
 
 const Datatable = () => {
 
-  const {data, setData, dataTableStatus, setDataTableStatus, addPoint, editPoint, deletePoint} 
+  const {currStep, currIteration, data, setData, dataProcessed, setDataProcessed, dataTableStatus, setDataTableStatus, addPoint, editPoint, deletePoint} 
   = useContext(ClusteringContext);
   const [lastFocusId, setLastFocusId] = useState(null);
   const [lastInvalid, setLastInvalid] = useState(null);
@@ -34,7 +34,6 @@ const Datatable = () => {
     let id = event.target.id;
     
     if (key === keys.enter) {
-      console.log("hit enter");
       let toAdd = (id.slice(0,2) === 'd0') ? addInput('da') : null;
     } else if (key === keys.delete) {
       event.preventDefault();
@@ -152,7 +151,6 @@ const Datatable = () => {
   }
 
   const addInput = (id) => {
-    console.log("addInput: ", id, validX, validY, inputX, inputY);
     if (validX && validY) {
       addPoint(id, inputX, inputY);
       let firstInput = document.getElementById('d0x');
@@ -184,6 +182,11 @@ const Datatable = () => {
       setData(data);
     };
     reader.readAsText(files[0]);
+  }
+
+  const handleEdit = () => {
+    setDataProcessed(false);
+    setDataTableStatus('editing');
   }
 
   const status = dataTableStatus;
@@ -267,7 +270,7 @@ const Datatable = () => {
         <button className="tableBtn" icon={faDownload} onClick={downloadData}>
           Download
         </button>
-        <button className="tableBtn" icon={faEdit} onClick={()=>setDataTableStatus('editing')}>
+        <button className="tableBtn" icon={faEdit} onClick={()=>handleEdit()}>
           Edit
         </button>
       </div>
@@ -291,6 +294,8 @@ const Datatable = () => {
         );
       }
   }
+
+  console.log("Entered data table");
 
   return (
     <div className="scrollbar-wrap">

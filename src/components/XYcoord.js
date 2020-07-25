@@ -3,7 +3,7 @@ import {ClusteringContext} from './ClusteringContext';
 import { Tooltip } from '@material-ui/core';
 
 const XYcoord = () => {
-  const {data, centers, colors, groups, results, currIteration, currStep, boundaryState} = 
+  const {dataProcessed, data, centers, colors, groups, results, currIteration, currStep, boundaryState} = 
     useContext(ClusteringContext);
   const [W, setW] = useState(window.innerWidth-Math.floor(window.innerWidth/4));
   const [H, setH] = useState(window.innerHeight-56);
@@ -305,6 +305,8 @@ const XYcoord = () => {
     window.addEventListener('resize', handleResize);
   });
 
+  console.log("reached xy coord");
+
   let points = data;
 
   let grids = generateGrids();
@@ -317,6 +319,9 @@ const XYcoord = () => {
     coordsys = coordsys.concat(boundaries);
   }
   
+  console.log("From XY coord: ", dataProcessed, currStep, currIteration);
+
+
   return  (<svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
             <g id='b'>
               {coordsys}

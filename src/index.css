@@ -64,16 +64,17 @@ code {
 
 /* For Toolbar Layout */
 .outer-menu {
-  height: 50px;
+  height: 47px;
   background: #E8E8E8;
   border-bottom: 1px solid #D3D3D3;  
   min-width: 370px;
+  overflow: hidden;
 }
 .bar {
   display: table;   /* Allow the centering to work */
   margin: 0 auto;
   position: relative;
-  top: 12.5%;
+  top: 10.5%;
 }
 .bar ul {
   list-style: none;
@@ -166,7 +167,7 @@ input[type="text"] {
   min-width: 320px;
   padding-left: 10px;
   padding-right:10px;
-  height: 300px;
+  height: 310px;
   border: solid #e8e8e8 1px;
   border-radius: 5px;
   transition: box-shadow 0.2s;

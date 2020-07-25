@@ -31,7 +31,7 @@ const initialState = {
   data: generateRandomData(),
   dataColors: generatedataColors(),
   results: [],
-  centers: [[-2,0],[2,0],[0,0],[0,8]],
+  centers: [[-4,-2],[0,-2],[4,-2],[0,-4]],
   colors: ["#9900EF","#A4DD00","#68CCCA","#FDA1FF"],
   groups: [],
   dataTableStatus: 'editing',
@@ -154,10 +154,14 @@ const reducer = (state, action) => {
       }
     }
     case ('PREV_IT'): {
+      console.log("Reached PREV_IT!!!!!!");
       let currIteration = state.currIteration;
+      console.log("currIteration is ", currIteration);
       if (currIteration !== 0){
+        console.log("Reached PREV_IT if");
         return {...state, currStep: 'centering' , currIteration: currIteration-1};
       } else {
+        console.log("Reached PREV_IT else");
         return {...state, currStep: 'grouping', currIteration: 0};
       }
     }
@@ -201,6 +205,7 @@ const reducer = (state, action) => {
     }
     case ("PROC_DATA"): {
       // show the new groups
+      console.log("reached process data!!!!!");
       state.currStep = 'grouping';
       state.currIteration = 0;
       let currLoop = 0;
@@ -272,6 +277,11 @@ const reducer = (state, action) => {
       const newState = (state.boundaryState) ? false : true;
       return {...state, boundaryState: newState};
     }
+    case ("SET_DATA_PROC"): {
+      if (action.payload === false) {
+        return {...state, dataProcessed: false, results: [], groups:[], currStep:'initial', currIteration: 0}
+      }
+    }
       /*
     case ("CLEAR_POINTS"):
       
@@ -326,8 +336,8 @@ export const ClusteringContextProvider = props => {
     },
 
     dataProcessed: state.dataProcessed,
-    setdataProcessed: value=>{
-      dispatch({type: 'SET_dataProcessed', payload: value})
+    setDataProcessed: value=>{
+      dispatch({type: 'SET_DATA_PROC', payload: value})
     },
 
     currIteration: state.currIteration,

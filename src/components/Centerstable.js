@@ -8,7 +8,7 @@ import Colorpicker from './Colorpicker';
 
 
 const Centerstable = () => {
-  const {colors, centers, results, setCenters, centersTableStatus, setCentersTableStatus, addPoint, editPoint, deletePoint, currIteration, currStep} 
+  const {colors, centers, results, setCenters, centersTableStatus, setCentersTableStatus, addPoint, editPoint, deletePoint, currIteration, currStep, setDataProcessed} 
     = useContext(ClusteringContext);
   const [lastFocusId, setLastFocusId] = useState(null);
   const [lastInvalid, setLastInvalid] = useState(null);
@@ -182,7 +182,13 @@ const Centerstable = () => {
     reader.readAsText(files[0]);
   }
 
-  const tableTitle = "Centers Points";
+  const handleEdit = () => {
+    setDataProcessed(false);
+    setCentersTableStatus('editing');
+  }
+
+
+  const tableTitle = "Cluster Centers";
   var points;
   if (currIteration === 0 && currStep !== 'centering') {
     points = centers;
@@ -280,7 +286,7 @@ const Centerstable = () => {
           <button className="tableBtn" icon={faDownload} onClick={downloadCenters}>
             Download
           </button>
-          <button className="tableBtn" icon={faEdit} onClick={()=>setCentersTableStatus('editing')}>
+          <button className="tableBtn" icon={faEdit} onClick={()=>handleEdit()}>
             Edit
           </button>
         </div>

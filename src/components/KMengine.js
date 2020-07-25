@@ -3,10 +3,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMicrochip, faCheckSquare, faEdit, faMinus, faPlus, faRedo, faPlay, faStepForward, faStepBackward, faFastBackward, faFastForward, faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons'
 import {ClusteringContext} from './ClusteringContext';
 import { Tooltip, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
+import IconButton from '@material-ui/core/IconButton';
+import Collapse from '@material-ui/core/Collapse';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    '& > * + *': {
+    marginTop: theme.spacing(0),
+    },
+  },
+}));
 
 
 const KMengine = () => {
+  const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+  const [type, setType] = React.useState("");
+  const [message, setMessage] = React.useState("");
   const {dataProcessed, dataTableStatus, centersTableStatus, processData, showInitialCondition, showNextStep, showPrevStep, showNextIteration, showPrevIteration, showFinalResult, boundaryState, setBoundaryState} = useContext(ClusteringContext);
+  
   const toggleEyeButton = () => {
     if (boundaryState) {
       setBoundaryState(false);
@@ -15,21 +34,54 @@ const KMengine = () => {
     }
   }
 
-  const showEffect = () => {
+  const handleProcessData = () => {
     //console.log(dataTableStatus, centersTableStatus);
+    let type = null;
+    let message = null;
+      console.log("From KM Engine: dataProcessed? ", dataProcessed);
     if (dataProcessed) {
-      console.log("data already processed");
+      type = 'success';
+      message = 'Data is already processed!';
+    } else if (dataTableStatus === 'saved' && centersTableStatus === 'saved') {  
+      type = 'success';
+      message = 'Data successfully processed!';
+      processData();
     } else {
+      type = 'error';
       if (dataTableStatus === 'editing' && centersTableStatus === 'editing') {
-          alert('Both not saved');
+        message = <span>Please save <b>Data Points</b> & <b>Cluster Centers</b>! </span>;
       } else if (dataTableStatus === 'editing' && centersTableStatus === 'saved') {
-          alert('Table 1 not saved');
+        message = <span>Please save <b>Data Points</b>! </span>;
       } else if (dataTableStatus === 'saved' && centersTableStatus === 'editing') {
-          alert('Table 2 not saved');
-      } else if (dataTableStatus === 'saved' && centersTableStatus === 'saved') {  
-          processData();
+        message = <span>Please save <b>Cluster Centers</b>! </span>;
       }
     }
+      setType(type);  
+      setMessage(message);
+      setOpen(true);
+    }
+
+  const alertBar = () => {
+    return (
+      <Collapse in={open}>
+        <Alert severity={type}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </IconButton>
+          }
+        >
+          {message}
+        </Alert>
+      </Collapse>
+    );
   }
 
   const viewButton = (boundaryState) ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />;
@@ -52,6 +104,7 @@ const KMengine = () => {
           showNextStep();
         }
         case '6': {
+          console.log("Reached show previous iteration");
           showPrevIteration();
         }
         case '7': {
@@ -61,20 +114,24 @@ const KMengine = () => {
           showFinalResult();
         }
         case '9': {
+          console.log('reached toggle eye');
           toggleEyeButton();
         }
       }
     } else {
-      console.log("not yet processed");
+      setOpen(true);
+      setType("error");
+      setMessage(<span>Please process data first! (Click on <FontAwesomeIcon icon={faMicrochip}/>)</span>);
     }
   }
-
+ 
   return (
     <div className="outer-menu">
+      {alertBar()}
       <div className="bar">
         <ul>
           <Tooltip title="Process Data" arrow> 
-            <li id="1" onClick={showEffect}>
+            <li id="1" onClick={handleProcessData}>
                 <FontAwesomeIcon icon={faMicrochip} />
             </li>    
           </Tooltip>
@@ -128,3 +185,8 @@ const KMengine = () => {
 // Must export!
 export default KMengine;
 
+
+
+/*
+
+*/
