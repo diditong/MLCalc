@@ -24,7 +24,7 @@ const KMengine = () => {
   const [open, setOpen] = React.useState(false);
   const [type, setType] = React.useState("");
   const [message, setMessage] = React.useState("");
-  const {dataProcessed, dataTableStatus, centersTableStatus, processData, showInitialCondition, showNextStep, showPrevStep, showNextIteration, showPrevIteration, showFinalResult, boundaryState, setBoundaryState} = useContext(ClusteringContext);
+  const {dataProcessed, dataTableStatus, centersTableStatus, processData, autoPlay, showInitialCondition, showNextStep, showPrevStep, showNextIteration, showPrevIteration, showFinalResult, boundaryState, setBoundaryState} = useContext(ClusteringContext);
   
   const toggleEyeButton = () => {
     if (boundaryState) {
@@ -86,39 +86,9 @@ const KMengine = () => {
 
   const viewButton = (boundaryState) ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />;
   const viewButtonTitle = (boundaryState) ? "Toggle Off Boundaries" : "Toggle On Boundaries";
-  const pressButton = (event) => {
-    if (dataProcessed) {
-      var id = event.target.id;
-      switch (id) {
-        case '2': {
-          showInitialCondition();
-        }
-        case '3': {
-          
-        }
-        case '4': {
-          showPrevStep();
-        }
-        case '5': {
-          console.log("Reached show next step");
-          showNextStep();
-        }
-        case '6': {
-          console.log("Reached show previous iteration");
-          showPrevIteration();
-        }
-        case '7': {
-          showNextIteration();
-        }
-        case '8': {
-          showFinalResult();
-        }
-        case '9': {
-          console.log('reached toggle eye');
-          toggleEyeButton();
-        }
-      }
-    } else {
+  
+  var pressButton = (id) => {
+    if (!dataProcessed) {
       setOpen(true);
       setType("error");
       setMessage(<span>Please process data first! (Click on <FontAwesomeIcon icon={faMicrochip}/>)</span>);
@@ -136,42 +106,42 @@ const KMengine = () => {
             </li>    
           </Tooltip>
           <Tooltip title="Show Initial Condition" arrow> 
-            <li id="2" onClick={pressButton}> 
+            <li id="2" onClick={showInitialCondition}> 
               <FontAwesomeIcon icon={faRedo} />
             </li>
           </Tooltip>
           <Tooltip title="Autoplay" arrow> 
-            <li id="3" onClick={pressButton}> 
+            <li id="3" onClick={autoPlay}>
               <FontAwesomeIcon icon={faPlay} />
             </li>
           </Tooltip>
           <Tooltip title="Show Previous Step" arrow> 
-            <li id="4" onClick={pressButton}>
+            <li id="4" onClick={showPrevStep}>
               <FontAwesomeIcon icon={faStepBackward}/>
             </li>
           </Tooltip>
           <Tooltip title="Show Next Step" arrow> 
-            <li id="5" onClick={pressButton}> 
+            <li id="5" onClick={showNextStep}> 
               <FontAwesomeIcon icon={faStepForward}/>
             </li>
           </Tooltip>
           <Tooltip title="Show Previous Iteration" arrow> 
-            <li id="6" onClick={pressButton}>
+            <li id="6" onClick={showPrevIteration}>
               <FontAwesomeIcon icon={faFastBackward}/>
             </li>
           </Tooltip>
           <Tooltip title="Show Next Iteration" arrow> 
-            <li id="7" onClick={pressButton}>
+            <li id="7" onClick={showNextIteration}>
               <FontAwesomeIcon icon={faFastForward} />
             </li>
           </Tooltip>
           <Tooltip title="Show Final Result" arrow> 
-            <li id="8" onClick={pressButton}>
+            <li id="8" onClick={showFinalResult}>
               <FontAwesomeIcon icon={faKey} />
             </li>
           </Tooltip>
           <Tooltip title={viewButtonTitle} arrow> 
-            <li id="9" onClick={pressButton}>
+            <li id="9" onClick={toggleEyeButton}>
               {viewButton}
             </li>
           </Tooltip>

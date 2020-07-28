@@ -143,58 +143,69 @@ const reducer = (state, action) => {
       return {...state, centers: action.payload.centers};
     }
     case ("NEXT_IT"): {
-      console.log("");
-      let currIteration = state.currIteration;
-      let maxIteration = state.results.length;
-      if (currIteration === maxIteration-1) {
-        alert("reached final iteration");
-        return {...state};
-      } else {
-        return {...state, currStep: 'centering' , currIteration: state.currIteration+1};
+      if (state.dataProcessed) {
+        let currIteration = state.currIteration;
+        let maxIteration = state.results.length;
+        if (currIteration === maxIteration-1) {
+          alert("reached final iteration");
+          return {...state};
+        } else {
+          return {...state, currStep: 'centering' , currIteration: state.currIteration+1};
+        }
       }
     }
     case ('PREV_IT'): {
-      console.log("Reached PREV_IT!!!!!!");
-      let currIteration = state.currIteration;
-      console.log("currIteration is ", currIteration);
-      if (currIteration !== 0){
-        console.log("Reached PREV_IT if");
-        return {...state, currStep: 'centering' , currIteration: currIteration-1};
-      } else {
-        console.log("Reached PREV_IT else");
-        return {...state, currStep: 'grouping', currIteration: 0};
+      if (state.dataProcessed) {
+        console.log("Reached PREV_IT!!!!!!");
+        let currIteration = state.currIteration;
+        console.log("currIteration is ", currIteration);
+        if (currIteration !== 0){
+          console.log("Reached PREV_IT if");
+          return {...state, currStep: 'centering' , currIteration: currIteration-1};
+        } else {
+          console.log("Reached PREV_IT else");
+          return {...state, currStep: 'grouping', currIteration: 0};
+        }
       }
     }
     case ('NEXT_STEP'): {
-      let currIteration = state.currIteration;
-      let maxIteration = state.results.length;
-      let currStep = state.currStep;
-      console.log(currIteration, currStep);
-      if (currStep === 'grouping') {
-        return {...state, currStep: 'centering'};
-      } else if (currStep === 'centering' && currIteration === maxIteration-1) {
-        alert("reached final step");
-        return {...state};
-      } else {
-        return {...state, currStep: 'grouping', currIteration: state.currIteration+1};
+      if (state.dataProcessed) {
+        let currIteration = state.currIteration;
+        let maxIteration = state.results.length;
+        let currStep = state.currStep;
+        console.log(currIteration, currStep);
+        if (currStep === 'grouping') {
+          return {...state, currStep: 'centering'};
+        } else if (currStep === 'centering' && currIteration === maxIteration-1) {
+          alert("reached final step");
+          return {...state};
+        } else {
+          return {...state, currStep: 'grouping', currIteration: state.currIteration+1};
+        }
       }
     }
     case ('PREV_STEP'): {
-      let currIteration = state.currIteration;
-      let currStep = state.currStep;
-      if (currStep === 'centering') {
-        return {...state, currStep: 'grouping'};
-      } else if (currIteration === 0) {
-        return {...state};
-      } else {
-        return {...state, currStep: 'centering', currIteration: state.currIteration-1};
+      if (state.dataProcessed) {
+        let currIteration = state.currIteration;
+        let currStep = state.currStep;
+        if (currStep === 'centering') {
+          return {...state, currStep: 'grouping'};
+        } else if (currIteration === 0) {
+          return {...state};
+        } else {
+          return {...state, currStep: 'centering', currIteration: state.currIteration-1};
+        }
       }
     }
     case ('INIT_COND'): {
-      return {...state, currStep: 'grouping', currIteration: 0}
+      if (state.dataProcessed) {
+        return {...state, currStep: 'grouping', currIteration: 0}
+      }
     }
     case ('FINAL_RESULT'): {
-      return {...state, currStep: 'centering', currIteration: state.results.length-1}
+      if (state.dataProcessed) {
+        return {...state, currStep: 'centering', currIteration: state.results.length-1}
+      }
     }
     case ('SET_COLORS'): {
       let id = action.payload.id;
@@ -281,6 +292,9 @@ const reducer = (state, action) => {
       if (action.payload === false) {
         return {...state, dataProcessed: false, results: [], groups:[], currStep:'initial', currIteration: 0}
       }
+    }
+    case ("AUTO_PLAY"): {
+      return {...state};
     }
       /*
     case ("CLEAR_POINTS"):
@@ -369,6 +383,10 @@ export const ClusteringContextProvider = props => {
     boundaryState: state.boundaryState,
     setBoundaryState: () => {
       dispatch({type: 'SET_BDRY', payload: null})
+    },
+    
+    autoPlay: () => {
+      dispatch({type: 'AUTO_PLAY', payload: null})
     }
   }
 
