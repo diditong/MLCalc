@@ -24,7 +24,7 @@ const KMengine = () => {
   const [open, setOpen] = React.useState(false);
   const [type, setType] = React.useState("");
   const [message, setMessage] = React.useState("");
-  const {dataProcessed, dataTableStatus, centersTableStatus, processData, autoPlay, showInitialCondition, showNextStep, showPrevStep, showNextIteration, showPrevIteration, showFinalResult, boundaryState, setBoundaryState} = useContext(ClusteringContext);
+  const {dataProcessed, dataTableStatus, centersTableStatus, processData, autoPlay, showInitialCondition, showNextStep, showPrevStep, showNextIteration, showPrevIteration, showFinalResult, boundaryState, setBoundaryState, currIteration, results} = useContext(ClusteringContext);
   
   const toggleEyeButton = () => {
     if (boundaryState) {
@@ -38,7 +38,7 @@ const KMengine = () => {
     //console.log(dataTableStatus, centersTableStatus);
     let type = null;
     let message = null;
-      console.log("From KM Engine: dataProcessed? ", dataProcessed);
+
     if (dataProcessed) {
       type = 'success';
       message = 'Data is already processed!';
@@ -60,6 +60,68 @@ const KMengine = () => {
       setMessage(message);
       setOpen(true);
     }
+
+  const handlePressButton = (button) => {
+    let type = null;
+    let message = null;
+    if (!dataProcessed) {
+      type = 'error';
+      message = <span>Please process data first! (Click on <FontAwesomeIcon icon={faMicrochip}/>)</span>;
+      setType(type);  
+      setMessage(message);
+      setOpen(true);
+    } else {
+      switch (button) {
+
+        case "SNI":
+          handleNextIteration();
+        case "SPI":
+          handlePrevIteration();
+        case "SFR":
+          showFinalResult();
+        default:
+          // code
+      }
+        
+    }
+  }
+
+  const handlePrevStep = () => {
+    
+  }
+
+  const handleNextStep = () => {
+    
+  }
+
+  const handlePrevIteration = () => {
+    let type = null;
+    let message = null;
+    if (currIteration === 0) {
+      type = 'warning';
+      message = 'Reached initial state!';
+      setType(type);  
+      setMessage(message);
+      setOpen(true);
+    } else {
+      showPrevIteration();
+    }
+  }
+
+  const handleNextIteration = () => {
+    let type = null;
+    let message = null;
+    let maxIteration = results.length;
+    if (currIteration === maxIteration-1) {
+      type = 'warning';
+      message = 'Reached final iteration!';
+      setType(type);  
+      setMessage(message);
+      setOpen(true);
+    } else {
+      showNextIteration();
+    }
+  }
 
   const alertBar = () => {
     return (
@@ -106,7 +168,7 @@ const KMengine = () => {
             </li>    
           </Tooltip>
           <Tooltip title="Show Initial Condition" arrow> 
-            <li id="2" onClick={showInitialCondition}> 
+            <li id="2" onClick={() => handlePressButton("SIC")}> 
               <FontAwesomeIcon icon={faRedo} />
             </li>
           </Tooltip>
@@ -116,27 +178,27 @@ const KMengine = () => {
             </li>
           </Tooltip>
           <Tooltip title="Show Previous Step" arrow> 
-            <li id="4" onClick={showPrevStep}>
+            <li id="4" onClick={() => handlePressButton("SNS")}>
               <FontAwesomeIcon icon={faStepBackward}/>
             </li>
           </Tooltip>
           <Tooltip title="Show Next Step" arrow> 
-            <li id="5" onClick={showNextStep}> 
+            <li id="5" onClick={() => handlePressButton("SNS")}>
               <FontAwesomeIcon icon={faStepForward}/>
             </li>
           </Tooltip>
           <Tooltip title="Show Previous Iteration" arrow> 
-            <li id="6" onClick={showPrevIteration}>
+            <li id="6" onClick={() => handlePressButton("SPI")}>
               <FontAwesomeIcon icon={faFastBackward}/>
             </li>
           </Tooltip>
           <Tooltip title="Show Next Iteration" arrow> 
-            <li id="7" onClick={showNextIteration}>
+            <li id="7" onClick={() => handlePressButton("SNI")}>
               <FontAwesomeIcon icon={faFastForward} />
             </li>
           </Tooltip>
           <Tooltip title="Show Final Result" arrow> 
-            <li id="8" onClick={showFinalResult}>
+            <li id="8" onClick={() => handlePressButton("SFR")}>
               <FontAwesomeIcon icon={faKey} />
             </li>
           </Tooltip>

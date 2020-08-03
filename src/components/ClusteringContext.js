@@ -128,6 +128,7 @@ const reducer = (state, action) => {
         return {...state, 
           data: [[inputX, inputY]].concat(state.data)};
       } else if (id === 'ca') {
+        //console.log("reached added centers");
         return {...state, 
           centers: [[inputX, inputY]].concat(state.centers),
           colors: [getRandomColor()].concat(state.colors)
@@ -163,7 +164,6 @@ const reducer = (state, action) => {
           console.log("Reached PREV_IT if");
           return {...state, currStep: 'centering' , currIteration: currIteration-1};
         } else {
-          console.log("Reached PREV_IT else");
           return {...state, currStep: 'grouping', currIteration: 0};
         }
       }

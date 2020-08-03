@@ -45,7 +45,7 @@ export const Colorpicker = (props) => {
         cursor: 'pointer',
       },
       popover: {
-        position: 'absolute',
+        position: '',
         zIndex: '2',
       },
       cover: {
