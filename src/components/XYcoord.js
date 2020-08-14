@@ -305,8 +305,6 @@ const XYcoord = () => {
     window.addEventListener('resize', handleResize);
   });
 
-  console.log("reached xy coord");
-
   let points = data;
 
   let grids = generateGrids();
@@ -318,9 +316,6 @@ const XYcoord = () => {
     let boundaries = generateBoundaries();
     coordsys = coordsys.concat(boundaries);
   }
-  
-  console.log("From XY coord: ", dataProcessed, currStep, currIteration);
-
 
   return  (<svg className='coordsys' onWheel={scrollZoom} onMouseMove={mouseMove} onMouseUp={mouseUp} onMouseDown={mouseDown}>
             <g id='b'>

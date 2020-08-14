@@ -295,8 +295,6 @@ const Datatable = () => {
       }
   }
 
-  console.log("Entered data table");
-
   return (
     <div className="scrollbar-wrap">
       <div className="table-container" id={'dataTable'}>        

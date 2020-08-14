@@ -33,7 +33,6 @@ const Centerstable = () => {
     let id = event.target.id;
     
     if (key === keys.enter) {
-      console.log("hit enter");
       let toAdd = (id.slice(0,2) === 'c0') ? addInput('ca') : null;
     } else if (key === keys.delete) {
       event.preventDefault();

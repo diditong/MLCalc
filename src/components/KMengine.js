@@ -71,18 +71,18 @@ const KMengine = () => {
       setMessage(message);
       setOpen(true);
     } else {
-      switch (button) {
-
-        case "SNI":
+      if (button === "SNI")
+      {
+          console.log("The button is ", button);
+          console.log("Reached handle next iteration");
           handleNextIteration();
-        case "SPI":
-          handlePrevIteration();
-        case "SFR":
+      } else if (button === "SPI")
+      {
+        console.log("The button is ", button);
+        handlePrevIteration();
+      } else if (button === "SFR") {
           showFinalResult();
-        default:
-          // code
       }
-        
     }
   }
 
@@ -95,6 +95,7 @@ const KMengine = () => {
   }
 
   const handlePrevIteration = () => {
+    console.log("entered handle previous iteration");
     let type = null;
     let message = null;
     if (currIteration === 0) {
@@ -178,7 +179,7 @@ const KMengine = () => {
             </li>
           </Tooltip>
           <Tooltip title="Show Previous Step" arrow> 
-            <li id="4" onClick={() => handlePressButton("SNS")}>
+            <li id="4" onClick={() => handlePressButton("SPS")}>
               <FontAwesomeIcon icon={faStepBackward}/>
             </li>
           </Tooltip>
